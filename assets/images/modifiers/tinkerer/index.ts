@@ -1,0 +1,9 @@
+export const tinkererZero = require('./zero.png');
+export const tinkererOne = require('./one.png');
+export const tinkererOneHeal = require('./oneHeal.png');
+export const tinkererOneImmobilize = require('./oneImmobilize.png');
+export const tinkererOneWound = require('./oneWound.png');
+export const tinkererTarget = require('./target.png');
+export const tinkererMuddleNext = require('./muddleNext.png');
+export const tinkererFireNext = require('./fireNext.png');
+export const tinkererThree = require('./three.png');
