@@ -21,11 +21,20 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 10,
+      height: 4,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 3,
+    elevation: 5
   },
   heroItem: {
     padding: 16,
     borderWidth: 1,
     borderColor: '#ccc',
+    marginBottom: 16,
   },
   heroItemText: {
     textAlign: 'center',

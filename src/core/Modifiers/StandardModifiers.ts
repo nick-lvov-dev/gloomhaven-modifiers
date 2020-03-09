@@ -14,7 +14,7 @@ const StandardModifiers: {
   Bless: Modifier;
 } = {
   Zero: { image: zero, attack: 0 },
-  One: { image: one, attack: 0 },
+  One: { image: one, attack: 1 },
   MinusOne: { image: nOne, attack: -1 },
   Two: { image: two, attack: 2 },
   MinusTwo: { image: nTwo, attack: -2 },

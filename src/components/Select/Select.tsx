@@ -1,33 +1,22 @@
 import React, { ReactNode, useState } from 'react';
 import styles from './styles';
 import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
-import Modal from 'react-native-modal';
+import getLabel from './helpers/getLabel';
+import SelectModal from './SelectModal/SelectModal';
 
 export interface SelectProps<T> {
   value: T;
-  bindValue?: keyof T;
   bindLabel?: keyof T | ((item: T) => string);
-  items: T[];
   style?: StyleProp<TextStyle>;
   valueStyle?: StyleProp<ViewStyle>;
   itemStyle?: StyleProp<TextStyle>;
   onChange: (value: T) => void;
+  renderValue?: (item: T) => ReactNode;
   renderItem?: (item: T) => ReactNode;
+  items: T[];
 }
 
-const getLabel = <T extends { [key: string]: object | string | number }>(value: T, bindLabel: keyof T | ((item: T) => string) = 'name') =>
-  typeof bindLabel === 'function' ? bindLabel(value) : value[bindLabel].toString();
-
-export default <T extends { [key: string]: object | string | number }>({
-  value,
-  bindLabel,
-  items,
-  style,
-  valueStyle,
-  itemStyle,
-  renderItem,
-  onChange,
-}: SelectProps<T>) => {
+export default <T extends any>({ value, bindLabel, style, valueStyle, renderValue, onChange, ...rest }: SelectProps<T>) => {
   const [isVisible, setIsVisible] = useState(false);
   const openOptions = () => setIsVisible(true);
   const closeOptions = () => setIsVisible(false);
@@ -35,31 +24,20 @@ export default <T extends { [key: string]: object | string | number }>({
     <>
       <TouchableOpacity onPress={openOptions}>
         <View style={[styles.valueWrapper, style]}>
-          {renderItem ? renderItem(value) : <Text style={[styles.value, valueStyle]}>{getLabel(value, bindLabel)}</Text>}
+          {renderValue ? renderValue(value) : <Text style={[styles.value, valueStyle]}>{getLabel(value, bindLabel)}</Text>}
         </View>
       </TouchableOpacity>
-      <Modal
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        animationInTiming={100}
-        animationOutTiming={100}
+      <SelectModal
         isVisible={isVisible}
-        onBackdropPress={closeOptions}
         onBackButtonPress={closeOptions}
-        backdropTransitionOutTiming={0}>
-        <View style={styles.optionsWrapper}>
-          {items.map(item => (
-            <TouchableOpacity
-              key={getLabel(item, bindLabel)}
-              onPress={() => {
-                closeOptions();
-                onChange(item);
-              }}>
-              {renderItem ? renderItem(item) : <Text style={[styles.option, itemStyle]}>{getLabel(item, bindLabel)}</Text>}
-            </TouchableOpacity>
-          ))}
-        </View>
-      </Modal>
+        onBackdropPress={closeOptions}
+        bindLabel={bindLabel}
+        onSelect={item => {
+          closeOptions();
+          onChange(item);
+        }}
+        {...rest}
+      />
     </>
   );
 };

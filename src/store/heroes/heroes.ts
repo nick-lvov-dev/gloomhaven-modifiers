@@ -10,11 +10,13 @@ const HEROES_STORAGE_KEY = 'HEROES_STORAGE_KEY';
 export interface HeroesState {
   heroes: HeroVm[];
   isLoading: boolean;
+  heroesLoaded: boolean;
 }
 
 const initialState: HeroesState = {
   heroes: [],
   isLoading: false,
+  heroesLoaded: false,
 };
 
 const slice = createSlice({
@@ -24,6 +26,7 @@ const slice = createSlice({
     setHeroes: (state, action: PayloadAction<HeroVm[]>) =>
       produce(state, draft => {
         draft.heroes = action.payload;
+        draft.heroesLoaded = true;
       }),
     setLoading: (state, action: PayloadAction<boolean>) =>
       produce(state, draft => {
@@ -39,20 +42,20 @@ export const loadHeroes = () => async (dispatch: Dispatch) => {
   // await AsyncStorage.removeItem(HEROES_STORAGE_KEY);
   dispatch(setLoading(true));
   const heroesJson = await AsyncStorage.getItem(HEROES_STORAGE_KEY);
-  if (!heroesJson) {
-    dispatch(setLoading(false));
-    return;
-  }
-  const heroes = JSON.parse(heroesJson) as HeroVm[];
+  const heroes = heroesJson ? (JSON.parse(heroesJson) as HeroVm[]) : [];
   dispatch(setHeroes(heroes));
   dispatch(setLoading(false));
 };
 
 export const addHero = (hero: Hero) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
-  const heroes = getState().heroes.heroes.concat([new HeroVm(hero)]);
-  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
-  dispatch(setHeroes(heroes));
+  const heroes = getState().heroes.heroes;
+  if (heroes.some(x => x.name === hero.name)) {
+    dispatch(setLoading(false));
+    return;
+  }
+  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([new HeroVm(hero)])));
+  dispatch(setHeroes(heroes.concat([new HeroVm(hero)])));
   dispatch(setLoading(false));
 };
 
@@ -64,9 +67,9 @@ export const updateHero = (hero: Hero) => async (dispatch: Dispatch, getState: (
   dispatch(setLoading(false));
 };
 
-export const removeHero = (hero: Hero | string) => async (dispatch: Dispatch, getState: () => RootState) => {
+export const removeHero = (hero: Hero | HeroVm | string) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
-  const heroes = getState().heroes.heroes.filter(x => x.name === (typeof hero === 'string' ? hero : hero.name));
+  const heroes = getState().heroes.heroes.filter(x => x.name !== (typeof hero === 'string' ? hero : hero.name));
   await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
   dispatch(setHeroes(heroes));
   dispatch(setLoading(false));

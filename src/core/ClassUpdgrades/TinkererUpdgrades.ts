@@ -14,7 +14,7 @@ const TinkererUpdgrades: {
   AddOneOneHeal: ClassUpgrade;
   AddOneTarget: ClassUpgrade;
 } = {
-  RemoveTwoMinusOne: new ClassUpgrade(StandardModifiers.MinusOne, -2, 'Remove two -1', { limit: 2 }),
+  RemoveTwoMinusOne: new ClassUpgrade(null, -2, 'Remove two -1', { limit: 2, subModifier: StandardModifiers.MinusOne }),
   ReplaceMinusTwoWithZero: new ClassUpgrade(StandardModifiers.Zero, 1, 'Replace -2 with 0', { subModifier: StandardModifiers.MinusTwo }),
   AddTwoOnes: new ClassUpgrade(StandardModifiers.One, 2, 'Add two +1'),
   AddOneThree: new ClassUpgrade(TinkererModifiers.Three, 1, 'Add one +3'),
@@ -25,3 +25,5 @@ const TinkererUpdgrades: {
   AddOneOneHeal: new ClassUpgrade(TinkererModifiers.OneHeal, 1, 'Add one +1 Heal', { limit: 2 }),
   AddOneTarget: new ClassUpgrade(TinkererModifiers.Target, 1, 'Add one +Target'),
 };
+
+export default TinkererUpdgrades;

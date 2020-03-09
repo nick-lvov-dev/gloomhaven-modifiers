@@ -3,7 +3,7 @@ import { HeroClass } from 'src/core/HeroClass';
 import { Modifier } from 'src/core/Modifiers/models/Modifier';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
 
-export class HeroVm {
+export class HeroVm implements Partial<Hero> {
   constructor(hero: Hero) {
     this.heroClass = hero.heroClass;
     this.name = hero.name;

@@ -8,7 +8,6 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'stretch',
-    marginHorizontal: 32,
   },
   heroIcon: {
     position: 'absolute',
@@ -16,12 +15,26 @@ export default StyleSheet.create({
     width: heroIconDimension,
     height: heroIconDimension,
   },
-  heroItem: {
+  heroValue: {
     flex: 0,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    padding: 12,
     backgroundColor: '#fff',
     justifyContent: 'center',
+  },
+  heroValueText: {
+    fontFamily: FontFamily.SemiBold,
+    fontSize: 14,
+  },
+  heroItem: {
+    flex: 0,
+    padding: 24,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+  },
+  heroItemText: {
+    fontFamily: FontFamily.SemiBold,
+    fontSize: 18,
+    letterSpacing: 0.3,
   },
   button: {
     fontFamily: FontFamily.Bold,

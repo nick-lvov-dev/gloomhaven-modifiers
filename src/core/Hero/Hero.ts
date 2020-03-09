@@ -5,7 +5,7 @@ import { cloneDeep } from 'lodash';
 import random from 'src/common/random';
 import StandardModifiers from '../Modifiers/StandardModifiers';
 
-interface HeroOptions {
+class HeroOptions implements Partial<Hero> {
   currentModifiers?: Modifier[];
   remainingModifiers?: Modifier[];
   drawn?: Modifier[];
@@ -14,8 +14,8 @@ interface HeroOptions {
 
 export class Hero {
   private _defaultModifiers: Modifier[];
-  private _currentModifiers: Modifier[] = [...this._defaultModifiers];
-  private _remainingModifiers: Modifier[] = [...this._defaultModifiers];
+  private _currentModifiers: Modifier[];
+  private _remainingModifiers: Modifier[];
   private _drawn: Modifier[] = [];
   private _upgrades: ClassUpgrade[] = [];
 
@@ -25,7 +25,9 @@ export class Hero {
     defaultModifiers: Modifier[] = [],
     options?: HeroOptions
   ) {
-    this._defaultModifiers = defaultModifiers;
+    this._defaultModifiers = [...defaultModifiers];
+    this._currentModifiers = [...this._defaultModifiers];
+    this._remainingModifiers = [...this._defaultModifiers];
     if (options) {
       if (options.currentModifiers) this._currentModifiers = [...options.currentModifiers];
       if (options.remainingModifiers) this._remainingModifiers = [...options.remainingModifiers];
@@ -35,36 +37,36 @@ export class Hero {
   }
 
   get defaultModifiers() {
-    return this._defaultModifiers;
+    return [...this._defaultModifiers];
   }
 
   get currentModifiers() {
-    return this._currentModifiers;
+    return [...this._currentModifiers];
   }
 
   get remainingModifiers() {
-    return this._remainingModifiers;
+    return [...this._remainingModifiers];
   }
 
   get drawn() {
-    return this._drawn;
+    return [...this._drawn];
   }
 
   get upgrades() {
-    return this._upgrades;
+    return [...this._upgrades];
   }
 
   get lastDrawn() {
-    if (!this.drawn.length) return;
+    if (!this._drawn.length) return;
 
-    const total: Modifier = this.drawn.slice(-1)[0];
+    const total: Modifier = { ...this._drawn.slice(-1)[0] };
     total.attack = total.attack ?? 0;
     total.heal = total.heal ?? 0;
     total.targets = total.targets ?? 0;
     total.effects = total.effects ?? [];
     let i = 2;
-    while (i <= this.drawn.length && this.drawn.slice(-i)[0].next) {
-      const mod = this.drawn.slice(-i)[0];
+    while (i <= this._drawn.length && this._drawn.slice(-i)[0].next) {
+      const mod = this._drawn.slice(-i)[0];
       total.attack += mod.attack ?? 0;
       total.heal += mod.heal ?? 0;
       total.targets += mod.targets ?? 0;
@@ -74,18 +76,26 @@ export class Hero {
     return total;
   }
 
+  get cursesTotal() {
+    return this._currentModifiers.filter(x => x.image === StandardModifiers.Curse.image).length;
+  }
+
+  get blessesTotal() {
+    return this._currentModifiers.filter(x => x.image === StandardModifiers.Bless.image).length;
+  }
+
   draw = () => {
     if (!this.lastDrawn?.next && this.lastDrawn?.shuffle) this.shuffle();
 
-    const index = random(this.remainingModifiers.length);
-    const modifier = this.remainingModifiers[index];
-    this.drawn.push(modifier);
+    const index = random(this._remainingModifiers.length);
+    const modifier = this._remainingModifiers[index];
+    this._drawn.push(modifier);
     if ([StandardModifiers.Curse.image, StandardModifiers.Bless.image].includes(modifier.image)) this.removeModifier(modifier);
-    this.remainingModifiers.splice(index, 1);
+    this._remainingModifiers.splice(index, 1);
   };
 
   shuffle = (clean = false) => {
-    if (clean) this._currentModifiers = [...this.defaultModifiers];
+    if (clean) this._currentModifiers = [...this._defaultModifiers];
     this._remainingModifiers = [...this._currentModifiers];
     this._drawn = [];
   };
@@ -103,9 +113,10 @@ export class Hero {
   addUpgrade = (upgrade: ClassUpgrade) => {
     if (this._upgrades.filter(x => x.name === upgrade.name).length === upgrade.limit) return;
 
-    for (let i = 0; i < upgrade.count; i++) {
-      this.defaultModifiers.push(upgrade.modifier);
-    }
+    if (upgrade.modifier)
+      for (let i = 0; i < upgrade.count; i++) {
+        this._defaultModifiers.push(upgrade.modifier);
+      }
 
     if (upgrade.subModifier) this.removeModifier(upgrade.subModifier, true, upgrade.count);
     this._upgrades.push(cloneDeep(upgrade));
@@ -117,10 +128,10 @@ export class Hero {
 
     if (upgrade.subModifier)
       for (let i = 0; i < upgrade.count; i++) {
-        this.defaultModifiers.push(upgrade.modifier);
+        this._defaultModifiers.push(upgrade.subModifier);
       }
 
-    this.removeModifier(upgrade.modifier, true, upgrade.count);
+    if (upgrade.modifier) this.removeModifier(upgrade.modifier, true, upgrade.count);
     this._upgrades.splice(index, 1);
   };
 
@@ -134,13 +145,13 @@ export class Hero {
     }
 
     for (let i = 0; i < count; i++) {
-      this.defaultModifiers.splice(
-        this.currentModifiers.findIndex(x => x.image === modifier.image),
+      this._defaultModifiers.splice(
+        this._currentModifiers.findIndex(x => x.image === modifier.image),
         1
       );
     }
 
-    this._currentModifiers = [...this.defaultModifiers];
-    this._remainingModifiers = [...this.defaultModifiers];
+    this._currentModifiers = [...this._defaultModifiers];
+    this._remainingModifiers = [...this._defaultModifiers];
   };
 }
