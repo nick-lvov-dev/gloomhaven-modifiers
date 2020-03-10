@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -19,6 +19,8 @@ const screenName = nameof<RootStackParamsList>('HeroView');
 
 interface StateProps {
   heroes: HeroVm[];
+  blessCount: number;
+  heroCurseCount: number;
 }
 
 interface DispatchProps {
@@ -32,7 +34,7 @@ interface OwnProps {
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-const HeroView = ({ heroes, route, navigation, update }: Props) => {
+const HeroView = ({ heroes, blessCount, heroCurseCount, route, navigation, update }: Props) => {
   const heroVm = route.params?.hero
     ? heroes.find(x => route.params!.hero === x.name)
     : heroes.find(x => x.heroClass === HeroClass.Monsters);
@@ -46,6 +48,8 @@ const HeroView = ({ heroes, route, navigation, update }: Props) => {
   const isMonster = heroVm.heroClass === HeroClass.Monsters;
   const [heroModel, setHeroModel] = useState(heroVm);
   const hero = new Hero(heroModel.heroClass, heroModel.name, heroModel.defaultModifiers, { ...heroModel });
+  const otherCursesCount = useMemo(() => (isMonster ? 0 : heroCurseCount - hero.cursesTotal), [isMonster, heroCurseCount]);
+  const otherBlessesCount = useMemo(() => blessCount - hero.blessesTotal, [blessCount]);
 
   const onDraw = () => {
     hero.draw();
@@ -95,20 +99,22 @@ const HeroView = ({ heroes, route, navigation, update }: Props) => {
           justifyContent: 'space-around',
           alignItems: 'stretch',
         }}>
-        {!isMonster && (
-          <TouchableOpacity
-            style={{ flex: 1, justifyContent: 'center' }}
-            onPress={() => {
-              hero.addBless();
-              setHeroModel(new HeroVm(hero));
-            }}>
-            <Text style={{ textAlign: 'center', fontSize: 18 }}>Bless</Text>
-            <Text style={{ textAlign: 'center' }}>{hero.blessesTotal}</Text>
-          </TouchableOpacity>
-        )}
         <TouchableOpacity
           style={{ flex: 1, justifyContent: 'center' }}
           onPress={() => {
+            if (otherBlessesCount + hero.blessesTotal === 10) return;
+
+            hero.addBless();
+            setHeroModel(new HeroVm(hero));
+          }}>
+          <Text style={{ textAlign: 'center', fontSize: 18 }}>Bless</Text>
+          <Text style={{ textAlign: 'center' }}>{hero.blessesTotal}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ flex: 1, justifyContent: 'center' }}
+          onPress={() => {
+            if (otherCursesCount + hero.cursesTotal === 10) return;
+
             hero.addCurse();
             setHeroModel(new HeroVm(hero));
           }}>
@@ -121,8 +127,9 @@ const HeroView = ({ heroes, route, navigation, update }: Props) => {
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(
-  state => ({
-    heroes: state.heroes.heroes,
-  }),
+  state => {
+    const { heroes, blessCount, heroCurseCount } = state.heroes;
+    return { heroes, blessCount, heroCurseCount };
+  },
   { update: updateHero }
 )(HeroView);

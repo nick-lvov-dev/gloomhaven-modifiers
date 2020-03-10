@@ -4,6 +4,8 @@ import { RootState } from '../store';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroVm } from './models/HeroVm';
+import { curse, bless } from 'assets/images/modifiers/base';
+import { monsterCurse } from 'assets/images/modifiers/monster';
 
 const HEROES_STORAGE_KEY = 'HEROES_STORAGE_KEY';
 
@@ -11,13 +13,23 @@ export interface HeroesState {
   heroes: HeroVm[];
   isLoading: boolean;
   heroesLoaded: boolean;
+  blessCount: number;
+  heroCurseCount: number;
 }
 
 const initialState: HeroesState = {
   heroes: [],
   isLoading: false,
   heroesLoaded: false,
+  blessCount: 0,
+  heroCurseCount: 0,
 };
+
+const getHeroCurseCount = (heroes: HeroVm[]) =>
+  heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x.image === curse).length, 0);
+
+const getBlessCount = (heroes: HeroVm[]) =>
+  heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x.image === bless).length, 0);
 
 const slice = createSlice({
   name: 'heroes',
@@ -27,6 +39,8 @@ const slice = createSlice({
       produce(state, draft => {
         draft.heroes = action.payload;
         draft.heroesLoaded = true;
+        draft.blessCount = getBlessCount(draft.heroes);
+        draft.heroCurseCount = getHeroCurseCount(draft.heroes);
       }),
     setLoading: (state, action: PayloadAction<boolean>) =>
       produce(state, draft => {
