@@ -13,7 +13,7 @@ import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import SelectModal from 'src/components/Select/SelectModal/SelectModal';
 import { Monsters } from 'src/common/Monsters';
 import { Hero } from 'src/core/Hero/Hero';
-import Icons from 'src/components/Icon/Icons';
+import { plus } from 'assets/images';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -100,7 +100,7 @@ const Home = ({ isLoading, heroes, navigation, loadHeroesData, remove, add, hero
           <Image source={heroIcons.Monsters} style={styles.buttonIcon} />
         </TouchableHighlight>
         <TouchableHighlight style={styles.addHeroButton} onPress={() => navigation.navigate('HeroEdit')}>
-          <Icons.Plus width={40} height={40} />
+          <Image source={plus} style={styles.buttonIcon} />
         </TouchableHighlight>
       </View>
       <SelectModal

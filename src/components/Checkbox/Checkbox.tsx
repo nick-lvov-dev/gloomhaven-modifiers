@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Animated, TouchableWithoutFeedback } from 'react-native';
+import { View, Animated, TouchableWithoutFeedback, StyleProp, ViewStyle } from 'react-native';
 import styles from './styles';
 
 interface Props {
   checked: boolean;
   onChange: (value: boolean) => void;
+  style?: StyleProp<ViewStyle>;
 }
 
-export default ({ checked, onChange }: Props) => {
+export default ({ checked, onChange, style }: Props) => {
   const [widthAnimChecked] = useState(new Animated.Value(0));
   const [widthAnimUnchecked] = useState(new Animated.Value(0));
   useEffect(() => {
@@ -30,7 +31,7 @@ export default ({ checked, onChange }: Props) => {
         checked ? widthAnimUnchecked.setValue(40) : widthAnimChecked.setValue(0);
         onChange(!checked);
       }}>
-      <View style={styles.container}>
+      <View style={[styles.container, style]}>
         <Animated.View style={{ height: 40, overflow: 'hidden', width: checked ? widthAnimChecked : widthAnimUnchecked }}>
           <View style={styles.checkbox} />
         </Animated.View>

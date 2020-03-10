@@ -51,10 +51,7 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
   const onSubmit = () => {
     if (isEdit) {
       const hero = new Hero(heroClass.name, name, heroVm!.defaultModifiers, { upgrades: heroVm!.upgrades });
-      const upgradesToAdd = upgrades.filter(u => !hero.upgrades.some(hu => hu.name === u.name));
-      const upgradesToRemove = hero.upgrades.filter(hu => !upgrades.some(u => hu.name === u.name));
-      for (const upgrade of upgradesToAdd) hero.addUpgrade(upgrade);
-      for (const upgrade of upgradesToRemove) hero.removeUpgrade(upgrade);
+      hero.updateUpgrades(upgrades);
 
       edit(hero);
     } else add(new Hero(heroClass.name, name, StandardModifierDeck));
@@ -102,13 +99,17 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
                       <View style={{ flexDirection: 'row' }}>
                         {range(ClassUpgrades[heroVm!.heroClass][key].limit).map(i => (
                           <Checkbox
+                            style={{ marginRight: 8 }}
                             key={'checkbox_' + key + '_' + i}
-                            checked={upgrades.some(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name)}
-                            onChange={checked =>
-                              checked
-                                ? setUpgrades(upgrades.concat([ClassUpgrades[heroVm!.heroClass][key]]))
-                                : setUpgrades(upgrades.filter(x => x.name !== ClassUpgrades[heroVm!.heroClass][key].name))
-                            }
+                            checked={upgrades.filter(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name).length >= i}
+                            onChange={checked => {
+                              if (checked) {
+                                setUpgrades(upgrades.concat([ClassUpgrades[heroVm!.heroClass][key]]));
+                              } else {
+                                const index = upgrades.findIndex(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name);
+                                setUpgrades(upgrades.slice(0, index).concat(upgrades.slice(index + 1)));
+                              }
+                            }}
                           />
                         ))}
                       </View>

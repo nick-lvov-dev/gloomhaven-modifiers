@@ -4,6 +4,7 @@ import { HeroClass } from '../HeroClass';
 import { cloneDeep } from 'lodash';
 import random from 'src/common/random';
 import StandardModifiers from '../Modifiers/StandardModifiers';
+import StandardModifierDeck from '../ModifierDecks/StandardModifierDeck';
 
 class HeroOptions implements Partial<Hero> {
   currentModifiers?: Modifier[];
@@ -25,35 +26,35 @@ export class Hero {
     defaultModifiers: Modifier[] = [],
     options?: HeroOptions
   ) {
-    this._defaultModifiers = [...defaultModifiers];
-    this._currentModifiers = [...this._defaultModifiers];
-    this._remainingModifiers = [...this._defaultModifiers];
+    this._defaultModifiers = cloneDeep(defaultModifiers);
+    this._currentModifiers = cloneDeep(this._defaultModifiers);
+    this._remainingModifiers = cloneDeep(this._defaultModifiers);
     if (options) {
-      if (options.currentModifiers) this._currentModifiers = [...options.currentModifiers];
-      if (options.remainingModifiers) this._remainingModifiers = [...options.remainingModifiers];
-      if (options.drawn) this._drawn = [...options.drawn];
+      if (options.currentModifiers) this._currentModifiers = cloneDeep(options.currentModifiers);
+      if (options.remainingModifiers) this._remainingModifiers = cloneDeep(options.remainingModifiers);
+      if (options.drawn) this._drawn = cloneDeep(options.drawn);
       if (options.upgrades) this._upgrades = cloneDeep(options.upgrades);
     }
   }
 
   get defaultModifiers() {
-    return [...this._defaultModifiers];
+    return cloneDeep(this._defaultModifiers);
   }
 
   get currentModifiers() {
-    return [...this._currentModifiers];
+    return cloneDeep(this._currentModifiers);
   }
 
   get remainingModifiers() {
-    return [...this._remainingModifiers];
+    return cloneDeep(this._remainingModifiers);
   }
 
   get drawn() {
-    return [...this._drawn];
+    return cloneDeep(this._drawn);
   }
 
   get upgrades() {
-    return [...this._upgrades];
+    return cloneDeep(this._upgrades);
   }
 
   get lastDrawn() {
@@ -64,11 +65,13 @@ export class Hero {
     total.heal = total.heal ?? 0;
     total.targets = total.targets ?? 0;
     total.effects = total.effects ?? [];
+    total.pierce = total.pierce ?? 0;
     let i = 2;
     while (i <= this._drawn.length && this._drawn.slice(-i)[0].next) {
       const mod = this._drawn.slice(-i)[0];
       total.attack += mod.attack ?? 0;
       total.heal += mod.heal ?? 0;
+      total.pierce += mod.pierce ?? 0;
       total.targets += mod.targets ?? 0;
       total.effects = total.effects?.concat(mod.effects ?? []);
     }
@@ -95,8 +98,8 @@ export class Hero {
   };
 
   shuffle = (clean = false) => {
-    if (clean) this._currentModifiers = [...this._defaultModifiers];
-    this._remainingModifiers = [...this._currentModifiers];
+    if (clean) this._currentModifiers = cloneDeep(this._defaultModifiers);
+    this._remainingModifiers = cloneDeep(this._currentModifiers);
     this._drawn = [];
   };
 
@@ -111,7 +114,7 @@ export class Hero {
   };
 
   addUpgrade = (upgrade: ClassUpgrade) => {
-    if (this._upgrades.filter(x => x.name === upgrade.name).length === upgrade.limit) return;
+    if (this._upgrades.filter(x => x.name === upgrade.name).length >= upgrade.limit) return;
 
     if (upgrade.modifier)
       for (let i = 0; i < upgrade.count; i++) {
@@ -120,6 +123,7 @@ export class Hero {
 
     if (upgrade.subModifier) this.removeModifier(upgrade.subModifier, true, upgrade.count);
     this._upgrades.push(cloneDeep(upgrade));
+    this.shuffle(true);
   };
 
   removeUpgrade = (upgrade: ClassUpgrade) => {
@@ -133,6 +137,13 @@ export class Hero {
 
     if (upgrade.modifier) this.removeModifier(upgrade.modifier, true, upgrade.count);
     this._upgrades.splice(index, 1);
+    this.shuffle(true);
+  };
+
+  updateUpgrades = (upgrades: ClassUpgrade[]) => {
+    this._defaultModifiers = cloneDeep(StandardModifierDeck);
+    this._upgrades = [];
+    for (const upgrade of upgrades) this.addUpgrade(upgrade);
   };
 
   private removeModifier = (modifier: Modifier, completely = false, count = 1) => {
@@ -151,7 +162,7 @@ export class Hero {
       );
     }
 
-    this._currentModifiers = [...this._defaultModifiers];
-    this._remainingModifiers = [...this._defaultModifiers];
+    this._currentModifiers = cloneDeep(this._defaultModifiers);
+    this._remainingModifiers = cloneDeep(this._defaultModifiers);
   };
 }

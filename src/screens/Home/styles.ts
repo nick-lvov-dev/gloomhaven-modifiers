@@ -8,7 +8,7 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'stretch',
-    marginHorizontal: 16,
+    marginHorizontal: 32,
   },
   addHeroButtonWrapper: {
     position: 'absolute',
