@@ -95,11 +95,11 @@ const Home = ({ isLoading, heroes, navigation, loadHeroesData, remove, add, hero
       <View style={styles.addHeroButtonWrapper}>
         <TouchableHighlight
           underlayColor={'#ccc'}
-          style={[styles.addHeroButton, { backgroundColor: '#fff', marginBottom: 16 }]}
+          style={[styles.button, { marginBottom: 16 }]}
           onPress={() => navigation.navigate('HeroView')}>
           <Image source={heroIcons.Monsters} style={styles.buttonIcon} />
         </TouchableHighlight>
-        <TouchableHighlight style={styles.addHeroButton} onPress={() => navigation.navigate('HeroEdit')}>
+        <TouchableHighlight style={styles.button} onPress={() => navigation.navigate('HeroEdit')}>
           <Image source={plus} style={styles.buttonIcon} />
         </TouchableHighlight>
       </View>

@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { FontFamily } from 'src/core/FontFamily';
 
-const addButtonDimension = 40;
+const buttonDimension = 40;
 
 export default StyleSheet.create({
   container: {
@@ -15,8 +15,8 @@ export default StyleSheet.create({
     bottom: 32,
     right: 32,
   },
-  addHeroButton: {
-    backgroundColor: '#ccc',
+  button: {
+    backgroundColor: '#666',
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
@@ -28,7 +28,7 @@ export default StyleSheet.create({
     },
     shadowOpacity: 0.22,
     shadowRadius: 3,
-    elevation: 5
+    elevation: 5,
   },
   heroItem: {
     padding: 16,
@@ -51,7 +51,8 @@ export default StyleSheet.create({
     height: 24,
   },
   buttonIcon: {
-    width: addButtonDimension,
-    height: addButtonDimension,
+    height: buttonDimension,
+    width: buttonDimension,
+    resizeMode: 'contain'
   },
 });
