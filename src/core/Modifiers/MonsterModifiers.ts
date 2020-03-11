@@ -22,7 +22,7 @@ const MonsterModifiers: {
   Curse: Modifier;
 } = {
   Zero: { image: monsterZero, attack: 0 },
-  One: { image: monsterOne, attack: 0 },
+  One: { image: monsterOne, attack: 1 },
   MinusOne: { image: monsterNOne, attack: -1 },
   Two: { image: monsterTwo, attack: 2 },
   MinusTwo: { image: monsterNTwo, attack: -2 },

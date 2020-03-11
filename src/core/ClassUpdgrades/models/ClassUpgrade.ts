@@ -6,7 +6,7 @@ export interface ClassUpgradeOptions {
 }
 
 export class ClassUpgrade {
-  constructor(public modifier: Modifier, public count: number, public name: string, options?: ClassUpgradeOptions) {
+  constructor(public modifier: Modifier | null, public count: number, public name: string, options?: ClassUpgradeOptions) {
     if (options) {
       if (options.limit) this.limit = options.limit;
       if (options.subModifier) this.subModifier = options.subModifier;

@@ -12,6 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@bam.tech/react-native-make": "^2.0.0",
     "@react-native-community/async-storage": "^1.8.1",
     "@react-native-community/masked-view": "^0.1.7",
     "@react-navigation/native": "^5.0.9",
@@ -22,11 +23,14 @@
     "lodash": "^4.17.15",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-collapsible": "^1.5.1",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-modal": "^11.5.4",
     "react-native-reanimated": "^1.7.0",
     "react-native-safe-area-context": "^0.7.3",
     "react-native-screens": "^2.2.0",
+    "react-native-svg": "^12.0.3",
+    "react-native-svg-transformer": "^0.14.3",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0"
