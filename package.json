@@ -6,6 +6,7 @@
     "android": "react-native run-android",
     "android-release": "react-native run-android --variant=release",
     "remove-app": "adb uninstall com.gloomhavenmodifiers",
+    "ae": "emulator -avd Pixel_2_API_28",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",

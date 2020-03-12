@@ -57,7 +57,7 @@ export class Hero {
     return cloneDeep(this._upgrades);
   }
 
-  get lastDrawn() {
+  get drawnTotal() {
     if (!this._drawn.length) return;
 
     const total: Modifier = { ...this._drawn.slice(-1)[0] };
@@ -73,11 +73,14 @@ export class Hero {
       total.heal += mod.heal ?? 0;
       total.pierce += mod.pierce ?? 0;
       total.targets += mod.targets ?? 0;
-      total.effects = total.effects?.concat(mod.effects ?? []);
+      total.effects = total.effects.concat(mod.effects ?? []);
+      i++;
     }
 
     return total;
   }
+
+  lastDrawn = (n = 1) => (this._drawn.length >= n ? this._drawn.slice(-n)[0] : null);
 
   get cursesTotal() {
     return this._currentModifiers.filter(x => x.image === StandardModifiers.Curse.image).length;
@@ -88,7 +91,7 @@ export class Hero {
   }
 
   draw = () => {
-    if (!this.lastDrawn?.next && this.lastDrawn?.shuffle) this.shuffle();
+    if (this.lastDrawn()?.shuffle) this.shuffle();
 
     const index = random(this._remainingModifiers.length);
     const modifier = this._remainingModifiers[index];
