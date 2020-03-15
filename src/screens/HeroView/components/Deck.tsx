@@ -18,7 +18,7 @@ interface AnimatedValueSub<T> {
   value: T;
 }
 
-const animationDuration = 300;
+const animationDuration = 200;
 const drawNextDelay = 50;
 const drawnCardTopOffset = 40;
 const effectiveSwipeLength = 40;

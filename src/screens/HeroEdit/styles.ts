@@ -40,10 +40,18 @@ export default StyleSheet.create({
     fontFamily: FontFamily.Bold,
     fontSize: 16,
     marginTop: 24,
+    borderRadius: 8,
     paddingVertical: 16,
     paddingHorizontal: 16,
     backgroundColor: '#666',
     color: '#fff',
     textAlign: 'center',
   },
+  cancel: {
+    fontFamily: FontFamily.Bold,
+    marginTop: 24,
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+  }
 });

@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { View, Image, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
-import styles from './styles';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { View, Image, Text, TouchableOpacity, AppState, AppStateStatus } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
 import Loader from '../../components/Loader/Loader';
 import { connect } from 'react-redux';
-import { loadHeroes, removeHero, addHero } from 'src/store/heroes/heroes';
+import { loadHeroes, addHero, removeHero, updateHero } from 'src/store/heroes/heroes';
 import { RootState } from 'src/store/store';
-import { classes, HeroClass } from 'src/core/HeroClass';
-import heroIcons from 'assets/images/classes/heroIcons';
-import { HeroVm } from 'src/store/heroes/models/HeroVm';
-import SelectModal from 'src/components/Select/SelectModal/SelectModal';
+import { HeroClass } from 'src/core/HeroClass';
+import { HeroVm, mapVmToHero } from 'src/store/heroes/models/HeroVm';
 import { Monsters } from 'src/common/Monsters';
-import { Hero } from 'src/core/Hero/Hero';
-import { plus } from 'assets/images';
+import { menu } from 'assets/images';
+import { TabView } from 'react-native-tab-view';
+import HeroView from '../HeroView/HeroView';
+import { FontFamily } from 'src/core/FontFamily';
+import HomeSideMenu from './components/HomeSideMenu';
+import SideMenu from 'src/components/SideMenu/SideMenu';
+import { toast } from 'src/common/toast';
+import Toast from 'react-native-root-toast';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -23,8 +26,9 @@ interface StateProps {
 
 interface DispatchProps {
   loadHeroesData: () => void;
-  remove: (hero: HeroVm) => void;
-  add: (hero: Hero) => void;
+  remove: (hero: string) => void;
+  add: (hero: HeroVm) => void;
+  update: (hero: HeroVm) => void;
 }
 
 interface OwnProps {
@@ -33,66 +37,68 @@ interface OwnProps {
 
 type Props = OwnProps & StateProps & DispatchProps;
 
-const HeroModalActions = {
-  Edit: 'Edit',
-  Delete: 'Delete',
-};
+interface TabRoute {
+  key: keyof typeof HeroClass;
+  title: string;
+}
 
-const Home = ({ isLoading, heroes, navigation, loadHeroesData, remove, add, heroesLoaded }: Props) => {
-  const [isHeroModalVisible, setIsHeroModalVisible] = useState(false);
-  const [selectedHero, setSelectedHero] = useState<HeroVm | null>(null);
+const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const routes: TabRoute[] = useMemo(() => heroVms.map(({ heroClass, name }) => ({ key: heroClass, title: name })), [heroVms.length]);
+  const refs = (Object.keys(HeroClass) as Array<keyof typeof HeroClass>).reduce((acc, val) => ({ ...acc, [val]: useRef(null) }), {});
+  const renderScene = ({ route: { key } }: { route: TabRoute }) => {
+    return <HeroView heroName={heroVms.find(hero => hero.heroClass === key)!.name} ref={refs[key]} />;
+  };
 
-  const openHeroModal = (hero: HeroVm) => {
-    setSelectedHero(hero);
-    setIsHeroModalVisible(true);
-  };
-  const closeHeroModal = () => {
-    setSelectedHero(null);
-    setIsHeroModalVisible(false);
-  };
-  const onHeroModalAction = ({ name }: { name: keyof typeof HeroModalActions }) => {
-    switch (name) {
-      case HeroModalActions.Edit: {
-        selectedHero && navigation.navigate('HeroEdit', { hero: selectedHero.name });
-        closeHeroModal();
-        break;
-      }
-      case HeroModalActions.Delete: {
-        selectedHero && remove(selectedHero);
-        closeHeroModal();
-        break;
-      }
-    }
-  };
   useEffect(() => {
     loadHeroesData();
   }, []);
   useEffect(() => {
-    if (heroesLoaded && !heroes.find(x => x.heroClass === HeroClass.Monsters)) {
-      add(Monsters);
+    if (heroesLoaded && !heroVms.some(x => x.heroClass === HeroClass.Monsters)) {
+      add(new HeroVm(Monsters));
     }
   }, [heroesLoaded]);
   return (
     <>
       <Loader active={isLoading} />
-      <View style={styles.container}>
-        {heroes
-          .filter(x => x.heroClass !== HeroClass.Monsters)
-          .map(hero => (
-            <TouchableOpacity
-              key={hero.name}
-              onPress={() => navigation.navigate('HeroView', { hero: hero.name })}
-              onLongPress={() => openHeroModal(hero)}>
-              <View style={styles.heroItem}>
-                <Text style={styles.heroItemText}>{hero.name}</Text>
-                <View style={styles.heroItemIconWrapper}>
-                  <Image source={classes.find(x => x.name === hero.heroClass)?.icon} style={styles.buttonIcon} />
-                </View>
-              </View>
+      <SideMenu
+        menu={
+          <HomeSideMenu
+            heroes={heroVms}
+            onAddHero={() => {
+              navigation.navigate('HeroEdit');
+              setIsSideMenuOpen(false);
+            }}
+            onHeroPress={hero => {
+              navigation.navigate('HeroEdit', { hero: hero.name });
+              setIsSideMenuOpen(false);
+            }}
+          />
+        }
+        isOpen={isSideMenuOpen}
+        onChange={value => setIsSideMenuOpen(value)}>
+        <View style={{ flex: 1, alignItems: 'stretch' }}>
+          <View style={{ height: 56, alignItems: 'center', justifyContent: 'center', backgroundColor: '#333' }}>
+            <TouchableOpacity onPress={() => setIsSideMenuOpen(!isSideMenuOpen)} style={{ position: 'absolute', left: 8, top: 12 }}>
+              <Image source={menu} style={{ height: 30, width: 40, resizeMode: 'contain' }} />
             </TouchableOpacity>
-          ))}
-      </View>
-      <View style={styles.addHeroButtonWrapper}>
+            <Text style={{ fontFamily: FontFamily.Regular, fontSize: 24, color: '#fff' }}>Deck</Text>
+          </View>
+          {heroesLoaded ? (
+            <TabView
+              navigationState={{ index, routes }}
+              renderScene={renderScene}
+              onIndexChange={i => {
+                update(refs[routes[index].key].current?.state?.heroModel);
+                setIndex(i);
+              }}
+              lazy
+            />
+          ) : null}
+        </View>
+      </SideMenu>
+      {/* <View style={styles.addHeroButtonWrapper}>
         <TouchableHighlight
           underlayColor={'#ccc'}
           style={[styles.button, { marginBottom: 16 }]}
@@ -102,20 +108,29 @@ const Home = ({ isLoading, heroes, navigation, loadHeroesData, remove, add, hero
         <TouchableHighlight style={styles.button} onPress={() => navigation.navigate('HeroEdit')}>
           <Image source={plus} style={styles.buttonIcon} />
         </TouchableHighlight>
-      </View>
-      <SelectModal
+      </View> */}
+      {/* <SelectModal
         isVisible={isHeroModalVisible}
         items={(Object.keys(HeroModalActions) as Array<keyof typeof HeroModalActions>).map(name => ({ name }))}
         onBackdropPress={closeHeroModal}
         onBackButtonPress={closeHeroModal}
         onSelect={onHeroModalAction}
-      />
+      /> */}
     </>
   );
 };
 
-export default connect<StateProps, DispatchProps, OwnProps, RootState>(state => ({ ...state.heroes }), {
-  loadHeroesData: loadHeroes,
-  add: addHero,
-  remove: removeHero,
-})(Home);
+export default connect<StateProps, DispatchProps, OwnProps, RootState>(
+  state => {
+    const {
+      heroes: { heroes, isLoading, heroesLoaded },
+    } = state;
+    return { isLoading, heroesLoaded, heroes };
+  },
+  {
+    loadHeroesData: loadHeroes,
+    add: addHero,
+    remove: removeHero,
+    update: updateHero,
+  }
+)(Home);
