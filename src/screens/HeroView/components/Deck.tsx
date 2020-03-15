@@ -220,7 +220,7 @@ export default ({ hero, onDraw }: Props) => {
         ) : null}
 
         {/* Static shadow */}
-        {!isMoving && !isDragging && (lastDrawn2 || (lastDrawn && !isDrawing)) ? (
+        {!(isMoving && isDragging) && (lastDrawn2 || (lastDrawn && !isDrawing)) ? (
           <Image
             source={cardShadow}
             // top: 2,3,4 for 1,2,3+ cards respectively
