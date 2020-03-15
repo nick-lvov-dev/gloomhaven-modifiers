@@ -1,26 +1,20 @@
 import { StyleSheet } from 'react-native';
+import { modifierHeight } from './components/styles';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
   },
   draw: {
     borderRadius: 32,
-    height: 160,
+    height: modifierHeight,
     width: 240,
     marginVertical: 32,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-  },
-  modifier: {
-    borderRadius: 32,
-    overflow: 'hidden',
-    width: 240,
-    height: 160,
   },
   drawnModifierWrapper: {
     position: 'absolute',

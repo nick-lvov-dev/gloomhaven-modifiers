@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Text, View, TouchableOpacity, Image, Animated, TouchableWithoutFeedback } from 'react-native';
+import { Text, View, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, ToastAndroid, Easing } from 'react-native';
 import styles from './styles';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
@@ -14,6 +14,8 @@ import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { nameof } from 'src/common/nameof';
 import { HeroClass } from 'src/core/HeroClass';
+import TouchableView from 'src/components/TouchableView/TouchableView';
+import Deck from './components/Deck';
 
 const screenName = nameof<RootStackParamsList>('HeroView');
 
@@ -34,13 +36,7 @@ interface OwnProps {
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-const animationDuration = 300;
-const animationDelay = 200;
-const cardStartOffset = 40;
-
 const HeroView = ({ heroes, blessCount, heroCurseCount, route, navigation, update }: Props) => {
-  const [animatedCardTop] = useState(new Animated.Value(cardStartOffset));
-  const [animatedCardOpacity] = useState(new Animated.Value(0));
   const heroVm = route.params?.hero
     ? heroes.find(x => route.params!.hero === x.name)
     : heroes.find(x => x.heroClass === HeroClass.Monsters);
@@ -53,29 +49,11 @@ const HeroView = ({ heroes, blessCount, heroCurseCount, route, navigation, updat
 
   const isMonster = heroVm.heroClass === HeroClass.Monsters;
   const [heroModel, setHeroModel] = useState(heroVm);
-  const [isDrawing, setIsDrawing] = useState(false);
   const hero = new Hero(heroModel.heroClass, heroModel.name, heroModel.defaultModifiers, { ...heroModel });
   const otherCursesCount = useMemo(() => (isMonster ? 0 : heroCurseCount - hero.cursesTotal), [isMonster, heroCurseCount]);
   const otherBlessesCount = useMemo(() => blessCount - hero.blessesTotal, [blessCount]);
 
-  const onDraw = () => {
-    hero.draw();
-    setHeroModel(new HeroVm(hero));
-    animatedCardTop.setValue(cardStartOffset);
-    setIsDrawing(true);
-    Animated.parallel([
-      Animated.timing(animatedCardTop, {
-        toValue: 0,
-        duration: animationDuration,
-      }),
-      Animated.timing(animatedCardOpacity, {
-        toValue: 1,
-        duration: animationDuration,
-      }),
-    ]).start(() => {
-      setTimeout(() => setIsDrawing(false), animationDelay);
-    });
-  };
+  const onDraw = (hero: Hero) => setHeroModel(new HeroVm(hero));
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', () => {
@@ -83,11 +61,6 @@ const HeroView = ({ heroes, blessCount, heroCurseCount, route, navigation, updat
     });
     return unsubscribe;
   }, [navigation, hero]);
-
-  const lastDrawn = hero.lastDrawn();
-  const lastDrawn2 = hero.lastDrawn(2);
-
-  if (lastDrawn && lastDrawn.next && !isDrawing) onDraw();
 
   return (
     <View style={styles.container}>
@@ -105,16 +78,7 @@ const HeroView = ({ heroes, blessCount, heroCurseCount, route, navigation, updat
       <Text style={{ fontFamily: FontFamily.SemiBold, fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
         Remaining: {hero.remainingModifiers.length}
       </Text>
-      <TouchableWithoutFeedback onPress={() => !isDrawing && onDraw()}>
-        <View style={styles.draw}>
-          {lastDrawn2 ? <Image source={lastDrawn2.image} style={styles.modifier} /> : <Text>Tap to Draw</Text>}
-          {lastDrawn ? (
-            <Animated.View style={[styles.drawnModifierWrapper, { top: animatedCardTop, opacity: animatedCardOpacity }]}>
-              <Image source={lastDrawn.image} style={styles.modifier} />
-            </Animated.View>
-          ) : null}
-        </View>
-      </TouchableWithoutFeedback>
+      <Deck hero={hero} onDraw={onDraw} />
       <Text style={{ marginTop: 32, color: '#000', alignSelf: 'stretch', textAlign: 'center' }}>
         {(typeof hero.drawnTotal?.attack === 'number'
           ? [`Attack: ${hero.drawnTotal.attack > 0 ? '+' : ''}${hero.drawnTotal.attack.toString()}`]
