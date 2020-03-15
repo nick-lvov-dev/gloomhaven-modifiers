@@ -1,4 +1,4 @@
-import { zero, one, nOne, double, nTwo, two, empty, curse, bless } from 'assets/images/modifiers/base';
+import { zero, one, nOne, double, nTwo, two, noDmg, curse, bless } from 'assets/images/modifiers/base';
 import { ModifierEffect } from './models/ModifierEffect';
 import { Modifier } from './models/Modifier';
 
@@ -19,7 +19,7 @@ const StandardModifiers: {
   Two: { image: two, attack: 2 },
   MinusTwo: { image: nTwo, attack: -2 },
   Double: { image: double, shuffle: true, effects: [ModifierEffect.Double] },
-  NoDamage: { image: empty, shuffle: true, effects: [ModifierEffect.NoAttack] },
+  NoDamage: { image: noDmg, shuffle: true, effects: [ModifierEffect.NoAttack] },
   Curse: { image: curse, effects: [ModifierEffect.Double] },
   Bless: { image: bless, effects: [ModifierEffect.NoAttack] },
 };
