@@ -7,7 +7,7 @@ Development requires React Native [dev environment set up with Android Studio](h
   
 
 
-Starting the project:
+## Starting the project
 1. Start an emulator or connect an android device with debug on to the computer
 2. Sync gradle files in Android Studio
 3. Run `yarn` to install dependencies
@@ -15,7 +15,7 @@ Starting the project:
 
   
 
-Generating .apk
+## Generating .apk
 1. Start an emulator or connect an android device with debug on to the computer
 2. (Optional) Run `yarn run remove-app` to delete the previous version of the app from the connected device
 3. Run `yarn run android-release`
