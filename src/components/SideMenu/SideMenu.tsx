@@ -89,7 +89,7 @@ export default ({ isOpen, menu, animationDuration = 200, onChange, children }: P
           style={{
             position: 'absolute',
             left: 0,
-            width: 20,
+            width: 40,
             height,
             backgroundColor: '#00000001',
             zIndex: isOpen ? -1 : 1,
