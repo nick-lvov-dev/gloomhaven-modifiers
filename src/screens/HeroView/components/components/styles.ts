@@ -1,11 +1,14 @@
 import { StyleSheet } from 'react-native';
+import { width } from 'src/core/Dimensions';
 
-export const modifierHeight = 160;
+const modifierWidth = width / 2;
+const modifierHeight = (modifierWidth / 3) * 2;
+const modifierBorderRadius = modifierHeight / 10;
 
 export default StyleSheet.create({
   modifier: {
-    borderRadius: 16,
-    width: 240,
+    borderRadius: modifierBorderRadius,
+    width: modifierWidth,
     height: modifierHeight,
   },
   shadow: {

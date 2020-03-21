@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { View, Image, Text, TouchableOpacity, AppState, AppStateStatus } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
 import Loader from '../../components/Loader/Loader';
@@ -7,16 +7,15 @@ import { connect } from 'react-redux';
 import { loadHeroes, addHero, removeHero, updateHero } from 'src/store/heroes/heroes';
 import { RootState } from 'src/store/store';
 import { HeroClass } from 'src/core/HeroClass';
-import { HeroVm, mapVmToHero } from 'src/store/heroes/models/HeroVm';
+import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Monsters } from 'src/common/Monsters';
 import { menu } from 'assets/images';
-import { TabView } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 import HeroView from '../HeroView/HeroView';
 import { FontFamily } from 'src/core/FontFamily';
 import HomeSideMenu from './components/HomeSideMenu';
 import SideMenu from 'src/components/SideMenu/SideMenu';
-import { toast } from 'src/common/toast';
-import Toast from 'react-native-root-toast';
+import { colors } from 'src/core/colors';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -79,20 +78,18 @@ const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, upd
         isOpen={isSideMenuOpen}
         onChange={value => setIsSideMenuOpen(value)}>
         <View style={{ flex: 1, alignItems: 'stretch' }}>
-          <View style={{ height: 56, alignItems: 'center', justifyContent: 'center', backgroundColor: '#333' }}>
-            <TouchableOpacity onPress={() => setIsSideMenuOpen(!isSideMenuOpen)} style={{ position: 'absolute', left: 8, top: 12 }}>
-              <Image source={menu} style={{ height: 30, width: 40, resizeMode: 'contain' }} />
-            </TouchableOpacity>
-            <Text style={{ fontFamily: FontFamily.Regular, fontSize: 24, color: '#fff' }}>Deck</Text>
-          </View>
           {heroesLoaded ? (
             <TabView
               navigationState={{ index, routes }}
               renderScene={renderScene}
               onIndexChange={i => {
-                update(refs[routes[index].key].current?.state?.heroModel);
+                if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
                 setIndex(i);
               }}
+              sceneContainerStyle={{ flex: 1 }}
+              renderTabBar={props => (
+                <TabBar {...props} style={{ backgroundColor: '#333' }} indicatorStyle={{ backgroundColor: colors.red }} />
+              )}
               lazy
             />
           ) : null}

@@ -4,3 +4,4 @@ export const empty = require('./empty.png');
 export const cardShadow = require('./cardShadow.png');
 export const check = require('./check.png');
 export const menu = require('./menu.png');
+export const trash = require('./trash.png');

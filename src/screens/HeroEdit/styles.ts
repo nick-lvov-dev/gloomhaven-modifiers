@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { FontFamily } from 'src/core/FontFamily';
+import { colors } from 'src/core/colors';
 
 const heroIconDimension = 24;
 
@@ -43,7 +44,7 @@ export default StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 16,
     paddingHorizontal: 16,
-    backgroundColor: '#666',
+    backgroundColor: colors.red,
     color: '#fff',
     textAlign: 'center',
   },

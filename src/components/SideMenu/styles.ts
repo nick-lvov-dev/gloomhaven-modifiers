@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { height } from 'src/core/Dimensions';
+import { height, width } from 'src/core/Dimensions';
 
+export const menuWidth = (Math.round(width) * 2) / 3;
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -10,5 +11,7 @@ export default StyleSheet.create({
     position: 'absolute',
     top: 0,
     height,
+    zIndex: 2,
+
   },
 });

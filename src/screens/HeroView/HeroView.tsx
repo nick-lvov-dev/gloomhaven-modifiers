@@ -4,7 +4,7 @@ import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
 import { FontFamily } from 'src/core/FontFamily';
-import { reload } from 'assets/images';
+import { reload, trash } from 'assets/images';
 import { width } from 'src/core/Dimensions';
 import { HeroVm, mapVmToHero } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
@@ -12,6 +12,8 @@ import { HeroClass } from 'src/core/HeroClass';
 import Deck from './components/Deck';
 import { isEqual } from 'lodash';
 import { toast } from 'src/common/toast';
+import { bless, curse } from 'assets/images/modifiers/base';
+import { removeHero } from 'src/store/heroes/heroes';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -19,7 +21,9 @@ interface StateProps {
   heroCurseCount: number;
 }
 
-interface DispatchProps {}
+interface DispatchProps {
+  delete: (heroName: string) => void;
+}
 
 interface OwnProps {
   heroName: string;
@@ -70,23 +74,35 @@ class HeroView extends Component<Props, State> {
     this.setState({ heroModel: new HeroVm(hero) });
   };
 
+  delete = () => this.props.delete(this.props.heroName);
+
   render() {
     const hero = mapVmToHero(this.state.heroModel);
     return (
       <View style={styles.container}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignSelf: 'stretch' }}>
-          <Text style={{ fontFamily: FontFamily.SemiBold, fontSize: 24, textAlign: 'center', marginBottom: 12 }}>{hero.name}</Text>
+        {!this.isMonster && (
+          <TouchableOpacity activeOpacity={0.7} style={{ position: 'absolute', top: 16, right: 16 }} onPress={this.delete}>
+            <Image source={trash} style={{ height: 24, width: 24, resizeMode: 'contain', tintColor: '#333' }} />
+          </TouchableOpacity>
+        )}
+        <View>
+          <Text style={{ fontFamily: FontFamily.SemiBold, fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
+            Remaining: {hero.remainingModifiers.length}
+          </Text>
           <TouchableOpacity
-            style={{ position: 'absolute', right: 32, backgroundColor: '#666', padding: 8, paddingLeft: 9, borderRadius: 24 }}
+            style={{ position: 'absolute', right: 32, top: -10, backgroundColor: '#666', padding: 8, paddingLeft: 9, borderRadius: 24 }}
             onPress={() => this.onShuffle(hero)}>
             <Image source={reload} style={{ width: 24, height: 24 }} />
           </TouchableOpacity>
         </View>
-        <Text style={{ fontFamily: FontFamily.SemiBold, fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
-          Remaining: {hero.remainingModifiers.length}
-        </Text>
-        <Deck hero={hero} onDraw={this.onDraw} />
-        <Text style={{ marginTop: 32, color: '#000', alignSelf: 'stretch', textAlign: 'center' }}>
+        <Text
+          style={{
+            color: '#000',
+            fontFamily: FontFamily.SemiBold,
+            fontSize: 18,
+            alignSelf: 'stretch',
+            textAlign: 'center',
+          }}>
           {(typeof hero.drawnTotal?.attack === 'number'
             ? [`Attack: ${hero.drawnTotal.attack > 0 ? '+' : ''}${hero.drawnTotal.attack.toString()}`]
             : []
@@ -99,23 +115,27 @@ class HeroView extends Component<Props, State> {
             .concat(hero.drawnTotal?.effects ? hero.drawnTotal.effects : [])
             .join(' ')}
         </Text>
+        <View style={{ alignItems: 'center' }}>
+          <Deck hero={hero} onDraw={this.onDraw} />
+        </View>
         <View
           style={{
             position: 'absolute',
-            bottom: 0,
+            bottom: 40,
             height: 96,
             flexDirection: 'row',
-            width: width,
-            justifyContent: 'space-around',
+            width: width - 32,
+            justifyContent: 'space-between',
             alignItems: 'stretch',
+            marginHorizontal: 16,
           }}>
-          <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }} onPress={() => this.onAddBless(hero)}>
-            <Text style={{ textAlign: 'center', fontSize: 18 }}>Bless</Text>
-            <Text style={{ textAlign: 'center' }}>{hero.blessesTotal}</Text>
+          <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => this.onAddBless(hero)}>
+            <Image source={bless} style={{ width: 70, height: 46, marginBottom: 16, resizeMode: 'contain' }} />
+            <Text style={{ textAlign: 'center', fontSize: 18 }}>{hero.blessesTotal}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ flex: 1, justifyContent: 'center' }} onPress={() => this.onAddCurse(hero)}>
-            <Text style={{ textAlign: 'center', fontSize: 18 }}>Curse</Text>
-            <Text style={{ textAlign: 'center' }}>{hero.cursesTotal}</Text>
+          <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => this.onAddCurse(hero)}>
+            <Image source={curse} style={{ width: 70, height: 46, marginBottom: 16, resizeMode: 'contain' }} />
+            <Text style={{ textAlign: 'center', fontSize: 18 }}>{hero.cursesTotal}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -128,7 +148,7 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
     const { heroes, blessCount, heroCurseCount } = state.heroes;
     return { heroes, blessCount, heroCurseCount };
   },
-  null,
+  { delete: removeHero },
   null,
   { forwardRef: true }
 )(HeroView);

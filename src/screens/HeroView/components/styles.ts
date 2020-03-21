@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { modifierHeight } from './components/styles';
+import modifierStyles from './components/styles';
 
 export default StyleSheet.create({
   container: {
@@ -8,9 +8,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   draw: {
-    borderRadius: 32,
-    height: modifierHeight,
-    width: 240,
+    ...modifierStyles.modifier,
     marginVertical: 32,
     alignItems: 'center',
     justifyContent: 'center',

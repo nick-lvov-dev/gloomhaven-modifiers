@@ -3,10 +3,11 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-end',
+    alignItems: 'stretch',
     overflow: 'visible',
     backgroundColor: '#f8f8f8',
+    // backgroundColor: '#f00'
   },
   draw: {
     borderRadius: 32,

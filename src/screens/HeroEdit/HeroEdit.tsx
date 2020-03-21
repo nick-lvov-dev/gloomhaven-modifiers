@@ -70,7 +70,7 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
     <>
       <Loader active={isLoading} />
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={{ padding: 32, flex: 1, justifyContent: 'space-between' }}>
+        <ScrollView contentContainerStyle={{ padding: 32, flexGrow: 1, justifyContent: 'space-between' }}>
           <View>
             <TextFormField label="Name" value={name} onChange={setName} />
             <SelectFormField

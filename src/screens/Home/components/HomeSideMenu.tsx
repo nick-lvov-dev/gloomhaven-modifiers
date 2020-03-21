@@ -21,7 +21,7 @@ export default ({ heroes, onAddHero, onHeroPress }: Props) => (
           <Text style={styles.hero}>{hero.name}</Text>
         </TouchableOpacity>
       ))}
-    {heroes.length < Math.min(classes.length - 1, 5) ? (
+    {heroes.length < Math.min(classes.length, 5) ? (
       <TouchableOpacity style={styles.addHeroWrapper} activeOpacity={0.7} onPress={onAddHero}>
         <Text style={styles.addHero}>Add Hero</Text>
         <Image source={plus} style={styles.addHeroIcon} />

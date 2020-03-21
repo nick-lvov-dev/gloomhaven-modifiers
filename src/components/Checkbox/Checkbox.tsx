@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Animated, TouchableWithoutFeedback, StyleProp, ViewStyle } from 'react-native';
+import { View, Animated, TouchableWithoutFeedback, StyleProp, ViewStyle, Image } from 'react-native';
 import styles from './styles';
+import { check } from 'assets/images';
+import { colors } from 'src/core/colors';
 
 interface Props {
   checked: boolean;
@@ -33,7 +35,7 @@ export default ({ checked, onChange, style }: Props) => {
       }}>
       <View style={[styles.container, style]}>
         <Animated.View style={{ height: 40, overflow: 'hidden', width: checked ? widthAnimChecked : widthAnimUnchecked }}>
-          <View style={styles.checkbox} />
+          <Image source={check} style={{ width: 30, height: 20, resizeMode: 'contain', top: 10, left: 3, tintColor: colors.red }} />
         </Animated.View>
       </View>
     </TouchableWithoutFeedback>
