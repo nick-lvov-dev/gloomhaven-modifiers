@@ -4,14 +4,15 @@ import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
 import { reload, trash } from 'assets/images';
-import { HeroVm, mapVmToHero } from 'src/store/heroes/models/HeroVm';
+import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
 import Deck from './components/Deck';
 import { isEqual } from 'lodash';
-import { bless, curse } from 'assets/images/modifiers/base';
+import { bless, curse } from 'src/core/images/modifiers/base';
 import { removeHero } from 'src/store/heroes/heroes';
 import { activeOpacity } from 'src/core/contstants';
+import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -76,14 +77,15 @@ class HeroView extends Component<Props, State> {
 
   render() {
     const hero = mapVmToHero(this.state.heroModel);
-    const totalString = (typeof hero.drawnTotal?.attack === 'number'
-      ? [`Attack: ${hero.drawnTotal.attack > 0 ? '+' : ''}${hero.drawnTotal.attack.toString()}`]
+    const total = hero.drawnTotal;
+    const totalString = (typeof total?.attack === 'number'
+      ? [`Attack: ${total.attack > 0 ? '+' : ''}${total.attack.toString()}`]
       : []
     )
-      .concat(hero.drawnTotal?.heal ? [`Heal: ${hero.drawnTotal.heal > 0 ? '+' : ''}${hero.drawnTotal.heal.toString()}`] : [])
-      .concat(hero.drawnTotal?.pierce ? [`Pierce: ${hero.drawnTotal.pierce > 0 ? '+' : ''}${hero.drawnTotal.pierce.toString()}`] : [])
-      .concat(hero.drawnTotal?.targets ? [`Targets: ${hero.drawnTotal.targets > 0 ? '+' : ''}${hero.drawnTotal.targets.toString()}`] : [])
-      .concat(hero.drawnTotal?.effects ? hero.drawnTotal.effects : [])
+      .concat(total?.heal ? [`Heal: ${total.heal > 0 ? '+' : ''}${total.heal.toString()}`] : [])
+      .concat(total?.pierce ? [`Pierce: ${total.pierce > 0 ? '+' : ''}${total.pierce.toString()}`] : [])
+      .concat(total?.targets ? [`Targets: ${total.targets > 0 ? '+' : ''}${total.targets.toString()}`] : [])
+      .concat(total?.effects ? total.effects : [])
       .join(' ');
     return (
       <View style={styles.container}>

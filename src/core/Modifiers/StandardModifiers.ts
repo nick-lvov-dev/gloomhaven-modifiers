@@ -1,6 +1,7 @@
-import { zero, one, nOne, double, nTwo, two, noDmg, curse, bless } from 'assets/images/modifiers/base';
+import * as baseModifiers from 'src/core/images/modifiers/base';
 import { ModifierEffect } from './models/ModifierEffect';
 import { Modifier } from './models/Modifier';
+import { nameof } from 'src/common/helpers/nameof.helper';
 
 const StandardModifiers: {
   Zero: Modifier;
@@ -13,15 +14,15 @@ const StandardModifiers: {
   Curse: Modifier;
   Bless: Modifier;
 } = {
-  Zero: { image: zero, attack: 0 },
-  One: { image: one, attack: 1 },
-  MinusOne: { image: nOne, attack: -1 },
-  Two: { image: two, attack: 2 },
-  MinusTwo: { image: nTwo, attack: -2 },
-  Double: { image: double, shuffle: true, effects: [ModifierEffect.Double] },
-  NoDamage: { image: noDmg, shuffle: true, effects: [ModifierEffect.NoAttack] },
-  Curse: { image: curse, effects: [ModifierEffect.Double] },
-  Bless: { image: bless, effects: [ModifierEffect.NoAttack] },
+  Zero: { id: nameof<typeof baseModifiers>('zero'), image: baseModifiers.zero, attack: 0 },
+  One: { id: nameof<typeof baseModifiers>('one'), image: baseModifiers.one, attack: 1 },
+  MinusOne: { id: nameof<typeof baseModifiers>('nOne'), image: baseModifiers.nOne, attack: -1 },
+  Two: { id: nameof<typeof baseModifiers>('two'), image: baseModifiers.two, attack: 2 },
+  MinusTwo: { id: nameof<typeof baseModifiers>('nTwo'), image: baseModifiers.nTwo, attack: -2 },
+  Double: { id: nameof<typeof baseModifiers>('double'), image: baseModifiers.double, shuffle: true, effects: [ModifierEffect.Double] },
+  NoDamage: { id: nameof<typeof baseModifiers>('noDmg'), image: baseModifiers.noDmg, shuffle: true, effects: [ModifierEffect.NoAttack] },
+  Curse: { id: nameof<typeof baseModifiers>('curse'), image: baseModifiers.curse, effects: [ModifierEffect.Double] },
+  Bless: { id: nameof<typeof baseModifiers>('bless'), image: baseModifiers.bless, effects: [ModifierEffect.NoAttack] },
 };
 
 export default StandardModifiers;

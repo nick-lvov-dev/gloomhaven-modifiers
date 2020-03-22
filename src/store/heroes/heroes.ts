@@ -2,11 +2,9 @@ import { createSlice, PayloadAction, Dispatch } from '@reduxjs/toolkit';
 import { produce } from 'immer';
 import { RootState } from '../store';
 import AsyncStorage from '@react-native-community/async-storage';
-import { Hero } from 'src/core/Hero/Hero';
 import { HeroVm } from './models/HeroVm';
-import { curse, bless } from 'assets/images/modifiers/base';
-import { monsterCurse } from 'assets/images/modifiers/monster';
 import { cloneDeep } from 'lodash';
+import StandardModifiers from 'src/core/Modifiers/StandardModifiers';
 
 const HEROES_STORAGE_KEY = 'HEROES_STORAGE_KEY';
 
@@ -27,10 +25,16 @@ const initialState: HeroesState = {
 };
 
 const getHeroCurseCount = (heroes: HeroVm[]) =>
-  heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x.image === curse).length, 0);
+  heroes.reduce(
+    (total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.Curse.id).length,
+    0
+  );
 
 const getBlessCount = (heroes: HeroVm[]) =>
-  heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x.image === bless).length, 0);
+  heroes.reduce(
+    (total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.Bless.id).length,
+    0
+  );
 
 const slice = createSlice({
   name: 'heroes',

@@ -1,4 +1,4 @@
-import heroIcons from 'assets/images/classes/heroIcons';
+import heroIcons from 'src/core/images/heroIcons';
 
 export const HeroClass = {
   Scoundrel: 'Scoundrel',

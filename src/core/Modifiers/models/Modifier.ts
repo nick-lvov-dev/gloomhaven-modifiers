@@ -1,6 +1,7 @@
 import { ModifierEffect } from './ModifierEffect';
 
 export interface Modifier {
+  id: string;
   image: any;
   attack?: number;
   heal?: number;

@@ -13,12 +13,13 @@ import StandardModifierDeck from 'src/core/ModifierDecks/StandardModifierDeck';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { RouteProp } from '@react-navigation/native';
-import { nameof } from 'src/common/nameof';
+import { nameof } from 'src/common/helpers/nameof.helper';
 import Accordion from 'react-native-collapsible/Accordion';
 import ClassUpgrades from 'src/core/ClassUpdgrades/ClassUpgrades';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
 import { addHero, updateHero } from 'src/store/heroes/heroes';
 import HeroEditUpgrade from './components/HeroEditUpgrade/HeroEditUpgrade';
+import { mapModifierIdsToModifiers } from 'src/store/heroes/models/helpers/mapModifierIdsToModifiers.helper';
 
 const screenName = nameof<RootStackParamsList>('HeroEdit');
 
@@ -59,9 +60,14 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
     if (!isEdit || heroVm!.heroClass !== heroClass.name) setUpgrades([]);
   }, [heroClass]);
   const onSubmit = () => {
-    const hero = new Hero(heroClass.name, name, isEdit ? heroVm!.defaultModifiers : StandardModifierDeck, {
-      upgrades: isEdit ? heroVm!.upgrades : [],
-    });
+    const hero = new Hero(
+      heroClass.name,
+      name,
+      isEdit ? mapModifierIdsToModifiers(heroClass.name, heroVm!.defaultModifiers) : StandardModifierDeck,
+      {
+        upgrades: isEdit ? heroVm!.upgrades : [],
+      }
+    );
     hero.updateUpgrades(upgrades);
 
     isEdit ? edit(new HeroVm(hero)) : add(new HeroVm(hero));
