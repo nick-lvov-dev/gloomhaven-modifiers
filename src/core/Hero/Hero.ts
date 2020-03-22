@@ -96,7 +96,7 @@ export class Hero {
     const index = random(this._remainingModifiers.length);
     const modifier = this._remainingModifiers[index];
     this._drawn.push(modifier);
-    if ([StandardModifiers.Curse.image, StandardModifiers.Bless.image].includes(modifier.image)) this.removeModifier(modifier);
+    if ([StandardModifiers.Curse.image, StandardModifiers.Bless.image].includes(modifier.image)) this._removeModifier(modifier);
     this._remainingModifiers.splice(index, 1);
   };
 
@@ -117,6 +117,23 @@ export class Hero {
   };
 
   addUpgrade = (upgrade: ClassUpgrade) => {
+    this._addUpgrade(upgrade);
+    this.shuffle(true);
+  };
+
+  removeUpgrade = (upgrade: ClassUpgrade) => {
+    this._removeUpgrade(upgrade);
+    this.shuffle(true);
+  };
+
+  updateUpgrades = (upgrades: ClassUpgrade[]) => {
+    this._defaultModifiers = cloneDeep(StandardModifierDeck);
+    this._upgrades = [];
+    for (const upgrade of upgrades) this._addUpgrade(upgrade);
+    this.shuffle(true);
+  };
+
+  private _addUpgrade = (upgrade: ClassUpgrade) => {
     if (this._upgrades.filter(x => x.name === upgrade.name).length >= upgrade.limit) return;
 
     if (upgrade.modifier)
@@ -124,12 +141,11 @@ export class Hero {
         this._defaultModifiers.push(upgrade.modifier);
       }
 
-    if (upgrade.subModifier) this.removeModifier(upgrade.subModifier, true, upgrade.count);
+    if (upgrade.subModifier) this._removeModifier(upgrade.subModifier, true, upgrade.count);
     this._upgrades.push(cloneDeep(upgrade));
-    this.shuffle(true);
   };
 
-  removeUpgrade = (upgrade: ClassUpgrade) => {
+  private _removeUpgrade = (upgrade: ClassUpgrade) => {
     const index = this._upgrades.findIndex(x => x.name === upgrade.name);
     if (index === -1) return;
 
@@ -138,18 +154,11 @@ export class Hero {
         this._defaultModifiers.push(upgrade.subModifier);
       }
 
-    if (upgrade.modifier) this.removeModifier(upgrade.modifier, true, upgrade.count);
+    if (upgrade.modifier) this._removeModifier(upgrade.modifier, true, upgrade.count);
     this._upgrades.splice(index, 1);
-    this.shuffle(true);
   };
 
-  updateUpgrades = (upgrades: ClassUpgrade[]) => {
-    this._defaultModifiers = cloneDeep(StandardModifierDeck);
-    this._upgrades = [];
-    for (const upgrade of upgrades) this.addUpgrade(upgrade);
-  };
-
-  private removeModifier = (modifier: Modifier, completely = false, count = 1) => {
+  private _removeModifier = (modifier: Modifier, completely = false, count = 1) => {
     if (!completely) {
       this._currentModifiers.splice(
         this._currentModifiers.findIndex(x => x.image === modifier.image),
