@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import styles from './styles';
 import { classes, HeroClass } from 'src/core/HeroClass';
@@ -55,13 +55,16 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
   const [heroClass, setHeroClass] = useState(classes.find(x => x.name === heroVm?.heroClass) ?? availableClasses[0]);
   const [upgrades, setUpgrades] = useState<ClassUpgrade[]>(heroVm?.upgrades ?? []);
   const [activeSections, setActiveSections] = useState<number[]>([]);
+  useEffect(() => {
+    if (!isEdit || heroVm!.heroClass !== heroClass.name) setUpgrades([]);
+  }, [heroClass]);
   const onSubmit = () => {
-    if (isEdit) {
-      const hero = new Hero(heroClass.name, name, heroVm!.defaultModifiers, { upgrades: heroVm!.upgrades });
-      hero.updateUpgrades(upgrades);
+    const hero = new Hero(heroClass.name, name, isEdit ? heroVm!.defaultModifiers : StandardModifierDeck, {
+      upgrades: isEdit ? heroVm!.upgrades : [],
+    });
+    hero.updateUpgrades(upgrades);
 
-      edit(new HeroVm(hero));
-    } else add(new HeroVm(new Hero(heroClass.name, name, StandardModifierDeck)));
+    isEdit ? edit(new HeroVm(hero)) : add(new HeroVm(hero));
     navigation.goBack();
   };
   return (
@@ -89,34 +92,32 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
                 </View>
               )}
             />
-            {isEdit && (
-              <Accordion
-                touchableComponent={TouchableOpacity}
-                activeSections={activeSections}
-                renderHeader={() => <Text style={styles.upgrades}>Upgrades</Text>}
-                onChange={setActiveSections}
-                sections={['Upgrades']}
-                renderContent={() => (
-                  <>
-                    {Object.keys(ClassUpgrades[heroVm!.heroClass]).map(key => (
-                      <HeroEditUpgrade
-                        key={key}
-                        upgrade={ClassUpgrades[heroVm!.heroClass][key]}
-                        checkedCount={upgrades.filter(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name).length}
-                        onChange={checked => {
-                          if (checked) {
-                            setUpgrades(upgrades.concat([ClassUpgrades[heroVm!.heroClass][key]]));
-                          } else {
-                            const index = upgrades.findIndex(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name);
-                            setUpgrades(upgrades.slice(0, index).concat(upgrades.slice(index + 1)));
-                          }
-                        }}
-                      />
-                    ))}
-                  </>
-                )}
-              />
-            )}
+            <Accordion
+              touchableComponent={TouchableOpacity}
+              activeSections={activeSections}
+              renderHeader={() => <Text style={styles.upgrades}>Upgrades</Text>}
+              onChange={setActiveSections}
+              sections={['Upgrades']}
+              renderContent={() => (
+                <>
+                  {Object.keys(ClassUpgrades[heroClass.name]).map(key => (
+                    <HeroEditUpgrade
+                      key={key}
+                      upgrade={ClassUpgrades[heroClass.name][key]}
+                      checkedCount={upgrades.filter(x => x.name === ClassUpgrades[heroClass.name][key].name).length}
+                      onChange={checked => {
+                        if (checked) {
+                          setUpgrades(upgrades.concat([ClassUpgrades[heroClass.name][key]]));
+                        } else {
+                          const index = upgrades.findIndex(x => x.name === ClassUpgrades[heroClass.name][key].name);
+                          setUpgrades(upgrades.slice(0, index).concat(upgrades.slice(index + 1)));
+                        }
+                      }}
+                    />
+                  ))}
+                </>
+              )}
+            />
           </View>
           <View>
             <TouchableOpacity onPress={onSubmit}>
