@@ -1,0 +1,9 @@
+export const tinkererZero = require('../../../../assets/images/modifiers/tinkerer/zero.png');
+export const tinkererOne = require('../../../../assets/images/modifiers/tinkerer/one.png');
+export const tinkererOneHeal = require('../../../../assets/images/modifiers/tinkerer/oneHeal.png');
+export const tinkererOneImmobilize = require('../../../../assets/images/modifiers/tinkerer/oneImmobilize.png');
+export const tinkererOneWound = require('../../../../assets/images/modifiers/tinkerer/oneWound.png');
+export const tinkererTarget = require('../../../../assets/images/modifiers/tinkerer/target.png');
+export const tinkererMuddleNext = require('../../../../assets/images/modifiers/tinkerer/muddleNext.png');
+export const tinkererFireNext = require('../../../../assets/images/modifiers/tinkerer/fireNext.png');
+export const tinkererThree = require('../../../../assets/images/modifiers/tinkerer/three.png');

@@ -1,15 +1,7 @@
 import { Modifier } from './models/Modifier';
 import { ModifierEffect } from './models/ModifierEffect';
-import {
-  scoundrelZero,
-  scoundrelOne,
-  scoundrelTwo,
-  scoundrelOneNext,
-  scoundrelMuddleNext,
-  scoundrelPierceNext,
-  scoundrelPoisonNext,
-  scoundrelInvisibilityNext,
-} from 'assets/images/modifiers/scoundrel';
+import * as scoundrelModifiers from 'src/core/images/modifiers/scoundrel';
+import { nameof } from 'src/common/helpers/nameof.helper';
 
 const ScoundrelModifiers: {
   Zero: Modifier;
@@ -21,14 +13,34 @@ const ScoundrelModifiers: {
   MuddleNext: Modifier;
   InvisibilityNext: Modifier;
 } = {
-  Zero: { image: scoundrelZero, attack: 0 },
-  One: { image: scoundrelOne, attack: 1 },
-  Two: { image: scoundrelTwo, attack: 2 },
-  OneNext: { image: scoundrelOneNext, attack: 1, next: true },
-  MuddleNext: { image: scoundrelMuddleNext, next: true, effects: [ModifierEffect.Muddle] },
-  PierceNext: { image: scoundrelPierceNext, next: true, pierce: 3 },
-  PoisonNext: { image: scoundrelPoisonNext, next: true, effects: [ModifierEffect.Poison] },
-  InvisibilityNext: { image: scoundrelInvisibilityNext, next: true, effects: [ModifierEffect.Invisible] },
+  Zero: { id: nameof<typeof scoundrelModifiers>('scoundrelZero'), image: scoundrelModifiers.scoundrelZero, attack: 0 },
+  One: { id: nameof<typeof scoundrelModifiers>('scoundrelOne'), image: scoundrelModifiers.scoundrelOne, attack: 1 },
+  Two: { id: nameof<typeof scoundrelModifiers>('scoundrelTwo'), image: scoundrelModifiers.scoundrelTwo, attack: 2 },
+  OneNext: { id: nameof<typeof scoundrelModifiers>('scoundrelOneNext'), image: scoundrelModifiers.scoundrelOneNext, attack: 1, next: true },
+  MuddleNext: {
+    id: nameof<typeof scoundrelModifiers>('scoundrelMuddleNext'),
+    image: scoundrelModifiers.scoundrelMuddleNext,
+    next: true,
+    effects: [ModifierEffect.Muddle],
+  },
+  PierceNext: {
+    id: nameof<typeof scoundrelModifiers>('scoundrelPierceNext'),
+    image: scoundrelModifiers.scoundrelPierceNext,
+    next: true,
+    pierce: 3,
+  },
+  PoisonNext: {
+    id: nameof<typeof scoundrelModifiers>('scoundrelPoisonNext'),
+    image: scoundrelModifiers.scoundrelPoisonNext,
+    next: true,
+    effects: [ModifierEffect.Poison],
+  },
+  InvisibilityNext: {
+    id: nameof<typeof scoundrelModifiers>('scoundrelInvisibilityNext'),
+    image: scoundrelModifiers.scoundrelInvisibilityNext,
+    next: true,
+    effects: [ModifierEffect.Invisible],
+  },
 };
 
 export default ScoundrelModifiers;

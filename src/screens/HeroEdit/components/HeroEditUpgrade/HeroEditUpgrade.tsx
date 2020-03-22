@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { View, Text } from 'react-native';
-import { range } from 'src/common/range';
+import { range } from 'src/common/helpers/range.helper';
 import Checkbox from 'src/components/Checkbox/Checkbox';
 import styles from './styles';
 import 'react-native-get-random-values';

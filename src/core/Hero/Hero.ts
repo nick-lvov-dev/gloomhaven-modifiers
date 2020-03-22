@@ -1,8 +1,8 @@
 import { Modifier } from '../Modifiers/models/Modifier';
 import { ClassUpgrade } from '../ClassUpdgrades/models/ClassUpgrade';
 import { HeroClass } from '../HeroClass';
-import { cloneDeep } from 'lodash';
-import random from 'src/common/random';
+import { cloneDeep, uniq } from 'lodash';
+import random from 'src/common/helpers/random.helper';
 import StandardModifiers from '../Modifiers/StandardModifiers';
 import StandardModifierDeck from '../ModifierDecks/StandardModifierDeck';
 
@@ -77,6 +77,7 @@ export class Hero {
       i++;
     }
 
+    total.effects = uniq(total.effects);
     return total;
   }
 

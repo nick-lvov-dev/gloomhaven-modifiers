@@ -1,26 +1,23 @@
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
-import { Modifier } from 'src/core/Modifiers/models/Modifier';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
 
-export class HeroVm implements Partial<Hero> {
+export class HeroVm {
   constructor(hero: Hero) {
     this.heroClass = hero.heroClass;
     this.name = hero.name;
-    this.defaultModifiers = hero.defaultModifiers;
-    this.currentModifiers = hero.currentModifiers;
-    this.remainingModifiers = hero.remainingModifiers;
-    this.drawn = hero.drawn;
+    this.defaultModifiers = hero.defaultModifiers.map(x => x.id);
+    this.currentModifiers = hero.currentModifiers.map(x => x.id);
+    this.remainingModifiers = hero.remainingModifiers.map(x => x.id);
+    this.drawn = hero.drawn.map(x => x.id);
     this.upgrades = hero.upgrades;
   }
 
   heroClass: keyof typeof HeroClass;
   name: string;
-  defaultModifiers: Modifier[];
-  currentModifiers: Modifier[];
-  remainingModifiers: Modifier[];
-  drawn: Modifier[];
+  defaultModifiers: string[];
+  currentModifiers: string[];
+  remainingModifiers: string[];
+  drawn: string[];
   upgrades: ClassUpgrade[];
 }
-
-export const mapVmToHero = (vm: HeroVm) => new Hero(vm.heroClass, vm.name, vm.defaultModifiers, { ...vm });

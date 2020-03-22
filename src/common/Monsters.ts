@@ -1,5 +1,5 @@
 import { Hero } from 'src/core/Hero/Hero';
-import { nameof } from './nameof';
+import { nameof } from './helpers/nameof.helper';
 import { HeroClass } from 'src/core/HeroClass';
 import MonsterModifierDeck from 'src/core/ModifierDecks/MonsterModifierDeck';
 
