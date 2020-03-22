@@ -12,6 +12,16 @@ export default StyleSheet.create({
     top: 0,
     height,
     zIndex: 2,
-
+  },
+  backdrop: {
+    position: 'absolute',
+    right: 0,
+    width,
+    height,
+  },
+  anchor: {
+    position: 'absolute',
+    left: 0,
+    height,
   },
 });

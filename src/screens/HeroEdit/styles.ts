@@ -10,6 +10,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'stretch',
   },
+  scroll: { padding: 32, flexGrow: 1, justifyContent: 'space-between' },
   heroIcon: {
     position: 'absolute',
     right: 16,
@@ -37,6 +38,7 @@ export default StyleSheet.create({
     fontSize: 18,
     letterSpacing: 0.3,
   },
+  upgrades: { textAlign: 'center', fontSize: 16, fontFamily: FontFamily.SemiBold, paddingVertical: 16 },
   button: {
     fontFamily: FontFamily.Bold,
     fontSize: 16,
@@ -52,7 +54,7 @@ export default StyleSheet.create({
     fontFamily: FontFamily.Bold,
     marginTop: 24,
     fontSize: 16,
-    color: '#333',
+    color: colors.dark,
     textAlign: 'center',
-  }
+  },
 });

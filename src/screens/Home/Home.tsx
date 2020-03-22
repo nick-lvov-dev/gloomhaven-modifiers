@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import { View, Image, Text, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
 import Loader from '../../components/Loader/Loader';
@@ -9,13 +9,11 @@ import { RootState } from 'src/store/store';
 import { HeroClass } from 'src/core/HeroClass';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Monsters } from 'src/common/Monsters';
-import { menu } from 'assets/images';
 import { TabView, TabBar } from 'react-native-tab-view';
 import HeroView from '../HeroView/HeroView';
-import { FontFamily } from 'src/core/FontFamily';
 import HomeSideMenu from './components/HomeSideMenu';
 import SideMenu from 'src/components/SideMenu/SideMenu';
-import { colors } from 'src/core/colors';
+import styles from './styles';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -77,7 +75,7 @@ const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, upd
         }
         isOpen={isSideMenuOpen}
         onChange={value => setIsSideMenuOpen(value)}>
-        <View style={{ flex: 1, alignItems: 'stretch' }}>
+        <View style={styles.container}>
           {heroesLoaded ? (
             <TabView
               navigationState={{ index, routes }}
@@ -86,33 +84,13 @@ const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, upd
                 if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
                 setIndex(i);
               }}
-              sceneContainerStyle={{ flex: 1 }}
-              renderTabBar={props => (
-                <TabBar {...props} style={{ backgroundColor: '#333' }} indicatorStyle={{ backgroundColor: colors.red }} />
-              )}
+              sceneContainerStyle={styles.sceneContainer}
+              renderTabBar={props => <TabBar {...props} style={styles.tabBar} indicatorStyle={styles.tabIndicator} />}
               lazy
             />
           ) : null}
         </View>
       </SideMenu>
-      {/* <View style={styles.addHeroButtonWrapper}>
-        <TouchableHighlight
-          underlayColor={'#ccc'}
-          style={[styles.button, { marginBottom: 16 }]}
-          onPress={() => navigation.navigate('HeroView')}>
-          <Image source={heroIcons.Monsters} style={styles.buttonIcon} />
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => navigation.navigate('HeroEdit')}>
-          <Image source={plus} style={styles.buttonIcon} />
-        </TouchableHighlight>
-      </View> */}
-      {/* <SelectModal
-        isVisible={isHeroModalVisible}
-        items={(Object.keys(HeroModalActions) as Array<keyof typeof HeroModalActions>).map(name => ({ name }))}
-        onBackdropPress={closeHeroModal}
-        onBackButtonPress={closeHeroModal}
-        onSelect={onHeroModalAction}
-      /> */}
     </>
   );
 };

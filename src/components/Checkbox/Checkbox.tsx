@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Animated, TouchableWithoutFeedback, StyleProp, ViewStyle, Image } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { View, Animated, TouchableWithoutFeedback, Image, StyleProp, ViewStyle } from 'react-native';
 import styles from './styles';
 import { check } from 'assets/images';
 import { colors } from 'src/core/colors';
@@ -8,34 +8,32 @@ interface Props {
   checked: boolean;
   onChange: (value: boolean) => void;
   style?: StyleProp<ViewStyle>;
+  size?: number;
+  checkColor?: string;
+  animationDuration?: number;
 }
 
-export default ({ checked, onChange, style }: Props) => {
-  const [widthAnimChecked] = useState(new Animated.Value(0));
-  const [widthAnimUnchecked] = useState(new Animated.Value(0));
+export default ({ checked, onChange, size = 40, checkColor = colors.red, animationDuration = 300, style }: Props) => {
+  const [animatedWidth] = useState(new Animated.Value(checked ? size : 0));
+  const checkWidth = useMemo(() => (size / 4) * 3, [size]);
   useEffect(() => {
-    if (checked) {
-      Animated.timing(widthAnimChecked, {
-        toValue: 40,
-        duration: 300,
-      }).start();
-    } else {
-      Animated.timing(widthAnimUnchecked, {
-        toValue: 0,
-        duration: 300,
-      }).start();
-    }
+    Animated.timing(animatedWidth, {
+      toValue: checked ? size : 0,
+      duration: animationDuration,
+    }).start();
   }, [checked]);
 
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        checked ? widthAnimUnchecked.setValue(40) : widthAnimChecked.setValue(0);
         onChange(!checked);
       }}>
-      <View style={[styles.container, style]}>
-        <Animated.View style={{ height: 40, overflow: 'hidden', width: checked ? widthAnimChecked : widthAnimUnchecked }}>
-          <Image source={check} style={{ width: 30, height: 20, resizeMode: 'contain', top: 10, left: 3, tintColor: colors.red }} />
+      <View style={[styles.container, { width: size, height: size, borderWidth: size / 20 }, style]}>
+        <Animated.View style={[styles.animated, { width: animatedWidth, height: size }]}>
+          <Image
+            source={check}
+            style={[styles.check, { tintColor: checkColor, width: checkWidth, height: size / 2, top: size / 4, left: size / 10 - 1 }]}
+          />
         </Animated.View>
       </View>
     </TouchableWithoutFeedback>

@@ -214,9 +214,9 @@ export default ({ hero, onDraw }: Props) => {
 
         {/* Static top card */}
         {lastDrawn2 && isDrawing ? (
-          <ModifierView modifier={lastDrawn2} style={{ position: 'absolute' }} />
+          <ModifierView modifier={lastDrawn2} style={styles.staticModifier} />
         ) : lastDrawn && !isDrawing && !isDragging ? (
-          <ModifierView modifier={lastDrawn} style={{ position: 'absolute' }} />
+          <ModifierView modifier={lastDrawn} style={styles.staticModifier} />
         ) : null}
 
         {/* Static shadow */}
@@ -261,21 +261,22 @@ export default ({ hero, onDraw }: Props) => {
           })}
           {drawn.length > 1 ? (
             <Animated.View
-              style={{
-                position: 'absolute',
-                left: 2,
-                top: animatedCardTop.interpolate(getShadowInterpolation(drawn)),
-                // hide shadow when one card is left
-                opacity: animatedCardTop.interpolate({
-                  inputRange: [
-                    getModifierCardOffset(drawn, 0) - 1,
-                    getModifierCardOffset(drawn, 0),
-                    getModifierCardOffset(drawn, 0) + 1,
-                    getModifierCardOffset(drawn, 1),
-                  ],
-                  outputRange: [0, 0, 1, 1],
-                }),
-              }}>
+              style={[
+                styles.historyShadow,
+                {
+                  top: animatedCardTop.interpolate(getShadowInterpolation(drawn)),
+                  // hide shadow when one card is left
+                  opacity: animatedCardTop.interpolate({
+                    inputRange: [
+                      getModifierCardOffset(drawn, 0) - 1,
+                      getModifierCardOffset(drawn, 0),
+                      getModifierCardOffset(drawn, 0) + 1,
+                      getModifierCardOffset(drawn, 1),
+                    ],
+                    outputRange: [0, 0, 1, 1],
+                  }),
+                },
+              ]}>
               <Image source={cardShadow} style={[modifierStyles.modifier]} />
             </Animated.View>
           ) : null}

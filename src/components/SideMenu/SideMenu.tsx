@@ -1,20 +1,41 @@
 import React, { ReactNode, useState, useEffect, useRef } from 'react';
-import { View, Animated, Dimensions, Easing, TouchableWithoutFeedback } from 'react-native';
+import { View, Animated, Easing, TouchableWithoutFeedback, EasingFunction } from 'react-native';
 import styles, { menuWidth } from './styles';
-import { height, width } from 'src/core/Dimensions';
-import { toast } from 'src/common/toast';
 
-type Props = { isOpen: boolean; menu: ReactNode; animationDuration?: number; onChange: (isOpen: boolean) => void };
+type Props = {
+  isOpen: boolean;
+  menu: ReactNode;
+  animationDuration?: number;
+  onChange: (isOpen: boolean) => void;
+  animationFunc?: EasingFunction;
+  anchorWidth?: number;
+  anchorColor?: string;
+  backdropColor?: string;
+  backdropOpacity?: number;
+  dragActionLength?: number;
+} & Readonly<{ children?: ReactNode }>;
 const bezier = Easing.bezier(0.25, 0.1, 0.25, 1);
 
-export default ({ isOpen, menu, animationDuration = 200, onChange, children }: Props & Readonly<{ children?: ReactNode }>) => {
+export default ({
+  isOpen,
+  menu,
+  animationDuration = 200,
+  anchorWidth = 40,
+  anchorColor = '#00000001',
+  onChange,
+  animationFunc = bezier,
+  backdropColor = '#000',
+  backdropOpacity = 0.2,
+  dragActionLength = menuWidth / 3,
+  children,
+}: Props) => {
   const [animatedLeft] = useState(new Animated.Value(isOpen ? 0 : -menuWidth));
   const dragState = useRef(0);
   useEffect(() => {
     Animated.timing(animatedLeft, {
       toValue: isOpen ? 0 : -menuWidth,
       duration: animationDuration,
-      easing: Easing.in(bezier),
+      easing: Easing.in(animationFunc),
     }).start();
   }, [isOpen]);
 
@@ -32,7 +53,7 @@ export default ({ isOpen, menu, animationDuration = 200, onChange, children }: P
           animatedLeft.setValue(pageX > dragState.current ? dragState.current - menuWidth : pageX - menuWidth)
         }
         onResponderRelease={({ nativeEvent: { pageX } }) => {
-          if (dragState.current - pageX > menuWidth / 3) {
+          if (dragState.current - pageX > dragActionLength) {
             animatedLeft.flattenOffset();
             onChange(false);
           } else {
@@ -40,7 +61,7 @@ export default ({ isOpen, menu, animationDuration = 200, onChange, children }: P
             Animated.timing(animatedLeft, {
               toValue: 0,
               duration: animationDuration,
-              easing: Easing.in(bezier),
+              easing: Easing.in(animationFunc),
             }).start();
           }
 
@@ -50,15 +71,14 @@ export default ({ isOpen, menu, animationDuration = 200, onChange, children }: P
       </Animated.View>
       <TouchableWithoutFeedback disabled={!isOpen} onPress={() => onChange(false)}>
         <Animated.View
-          style={{
-            position: 'absolute',
-            right: 0,
-            width,
-            height,
-            backgroundColor: '#000000',
-            opacity: animatedLeft.interpolate({ inputRange: [-menuWidth, 0], outputRange: [0, 0.2] }),
-            zIndex: animatedLeft.interpolate({ inputRange: [-menuWidth, -menuWidth + 1, -menuWidth + 2], outputRange: [-1, 1, 1] }),
-          }}
+          style={[
+            styles.backdrop,
+            {
+              backgroundColor: backdropColor,
+              opacity: animatedLeft.interpolate({ inputRange: [-menuWidth, 0], outputRange: [0, backdropOpacity] }),
+              zIndex: animatedLeft.interpolate({ inputRange: [-menuWidth, -menuWidth + 1, -menuWidth + 2], outputRange: [-1, 1, 1] }),
+            },
+          ]}
         />
       </TouchableWithoutFeedback>
       <View
@@ -71,7 +91,7 @@ export default ({ isOpen, menu, animationDuration = 200, onChange, children }: P
           animatedLeft.setValue(pageX > menuWidth + dragState.current ? dragState.current : pageX - menuWidth)
         }
         onResponderRelease={({ nativeEvent: { pageX } }) => {
-          if (pageX - dragState.current > menuWidth / 3) {
+          if (pageX - dragState.current > dragActionLength) {
             animatedLeft.flattenOffset();
             onChange(true);
           } else {
@@ -79,21 +99,21 @@ export default ({ isOpen, menu, animationDuration = 200, onChange, children }: P
             Animated.timing(animatedLeft, {
               toValue: -menuWidth,
               duration: animationDuration,
-              easing: Easing.in(bezier),
+              easing: Easing.in(animationFunc),
             }).start();
           }
 
           dragState.current = 0;
         }}>
         <Animated.View
-          style={{
-            position: 'absolute',
-            left: 0,
-            width: 40,
-            height,
-            backgroundColor: '#00000001',
-            zIndex: isOpen ? -1 : 1,
-          }}></Animated.View>
+          style={[
+            styles.anchor,
+            {
+              width: anchorWidth,
+              backgroundColor: anchorColor,
+              zIndex: isOpen ? -1 : 1,
+            },
+          ]}></Animated.View>
       </View>
       {children}
     </View>

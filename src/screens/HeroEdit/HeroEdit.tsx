@@ -14,13 +14,11 @@ import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { RouteProp } from '@react-navigation/native';
 import { nameof } from 'src/common/nameof';
-import Checkbox from 'src/components/Checkbox/Checkbox';
 import Accordion from 'react-native-collapsible/Accordion';
 import ClassUpgrades from 'src/core/ClassUpdgrades/ClassUpgrades';
-import { FontFamily } from 'src/core/FontFamily';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
-import { range } from 'src/common/range';
 import { addHero, updateHero } from 'src/store/heroes/heroes';
+import HeroEditUpgrade from './components/HeroEditUpgrade/HeroEditUpgrade';
 
 const screenName = nameof<RootStackParamsList>('HeroEdit');
 
@@ -70,7 +68,7 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
     <>
       <Loader active={isLoading} />
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={{ padding: 32, flexGrow: 1, justifyContent: 'space-between' }}>
+        <ScrollView contentContainerStyle={styles.scroll}>
           <View>
             <TextFormField label="Name" value={name} onChange={setName} />
             <SelectFormField
@@ -95,36 +93,25 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
               <Accordion
                 touchableComponent={TouchableOpacity}
                 activeSections={activeSections}
-                renderHeader={() => (
-                  <Text style={{ textAlign: 'center', fontSize: 16, fontFamily: FontFamily.SemiBold, paddingVertical: 16 }}>Upgrades</Text>
-                )}
+                renderHeader={() => <Text style={styles.upgrades}>Upgrades</Text>}
                 onChange={setActiveSections}
                 sections={['Upgrades']}
                 renderContent={() => (
                   <>
                     {Object.keys(ClassUpgrades[heroVm!.heroClass]).map(key => (
-                      <View
+                      <HeroEditUpgrade
                         key={key}
-                        style={{ flexDirection: 'row', alignSelf: 'stretch', justifyContent: 'space-between', marginBottom: 16 }}>
-                        <View style={{ flexDirection: 'row' }}>
-                          {range(ClassUpgrades[heroVm!.heroClass][key].limit).map(i => (
-                            <Checkbox
-                              style={{ marginRight: 8 }}
-                              key={'checkbox_' + key + '_' + i}
-                              checked={upgrades.filter(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name).length >= i}
-                              onChange={checked => {
-                                if (checked) {
-                                  setUpgrades(upgrades.concat([ClassUpgrades[heroVm!.heroClass][key]]));
-                                } else {
-                                  const index = upgrades.findIndex(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name);
-                                  setUpgrades(upgrades.slice(0, index).concat(upgrades.slice(index + 1)));
-                                }
-                              }}
-                            />
-                          ))}
-                        </View>
-                        <Text style={{ fontFamily: FontFamily.Regular, fontSize: 16 }}>{ClassUpgrades[heroVm!.heroClass][key].name}</Text>
-                      </View>
+                        upgrade={ClassUpgrades[heroVm!.heroClass][key]}
+                        checkedCount={upgrades.filter(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name).length}
+                        onChange={checked => {
+                          if (checked) {
+                            setUpgrades(upgrades.concat([ClassUpgrades[heroVm!.heroClass][key]]));
+                          } else {
+                            const index = upgrades.findIndex(x => x.name === ClassUpgrades[heroVm!.heroClass][key].name);
+                            setUpgrades(upgrades.slice(0, index).concat(upgrades.slice(index + 1)));
+                          }
+                        }}
+                      />
                     ))}
                   </>
                 )}

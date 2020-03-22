@@ -25,4 +25,9 @@ export default StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  staticModifier: { position: 'absolute' },
+  historyShadow: {
+    position: 'absolute',
+    left: 2,
+  },
 });

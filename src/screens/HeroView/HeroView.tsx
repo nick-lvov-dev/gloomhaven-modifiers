@@ -1,19 +1,17 @@
-import React, { forwardRef, Component } from 'react';
+import React, { Component } from 'react';
 import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { FontFamily } from 'src/core/FontFamily';
 import { reload, trash } from 'assets/images';
-import { width } from 'src/core/Dimensions';
 import { HeroVm, mapVmToHero } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
 import Deck from './components/Deck';
 import { isEqual } from 'lodash';
-import { toast } from 'src/common/toast';
 import { bless, curse } from 'assets/images/modifiers/base';
 import { removeHero } from 'src/store/heroes/heroes';
+import { activeOpacity } from 'src/core/contstants';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -78,64 +76,40 @@ class HeroView extends Component<Props, State> {
 
   render() {
     const hero = mapVmToHero(this.state.heroModel);
+    const totalString = (typeof hero.drawnTotal?.attack === 'number'
+      ? [`Attack: ${hero.drawnTotal.attack > 0 ? '+' : ''}${hero.drawnTotal.attack.toString()}`]
+      : []
+    )
+      .concat(hero.drawnTotal?.heal ? [`Heal: ${hero.drawnTotal.heal > 0 ? '+' : ''}${hero.drawnTotal.heal.toString()}`] : [])
+      .concat(hero.drawnTotal?.pierce ? [`Pierce: ${hero.drawnTotal.pierce > 0 ? '+' : ''}${hero.drawnTotal.pierce.toString()}`] : [])
+      .concat(hero.drawnTotal?.targets ? [`Targets: ${hero.drawnTotal.targets > 0 ? '+' : ''}${hero.drawnTotal.targets.toString()}`] : [])
+      .concat(hero.drawnTotal?.effects ? hero.drawnTotal.effects : [])
+      .join(' ');
     return (
       <View style={styles.container}>
         {!this.isMonster && (
-          <TouchableOpacity activeOpacity={0.7} style={{ position: 'absolute', top: 16, right: 16 }} onPress={this.delete}>
-            <Image source={trash} style={{ height: 24, width: 24, resizeMode: 'contain', tintColor: '#333' }} />
+          <TouchableOpacity activeOpacity={activeOpacity} style={styles.deleteWrapper} onPress={this.delete}>
+            <Image source={trash} style={styles.delete} />
           </TouchableOpacity>
         )}
         <View>
-          <Text style={{ fontFamily: FontFamily.SemiBold, fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
-            Remaining: {hero.remainingModifiers.length}
-          </Text>
-          <TouchableOpacity
-            style={{ position: 'absolute', right: 32, top: -10, backgroundColor: '#666', padding: 8, paddingLeft: 9, borderRadius: 24 }}
-            onPress={() => this.onShuffle(hero)}>
-            <Image source={reload} style={{ width: 24, height: 24 }} />
+          <Text style={styles.remaining}>Remaining: {hero.remainingModifiers.length}</Text>
+          <TouchableOpacity style={styles.shuffleWrapper} onPress={() => this.onShuffle(hero)} activeOpacity={activeOpacity}>
+            <Image source={reload} style={styles.shuffle} />
           </TouchableOpacity>
         </View>
-        <Text
-          style={{
-            color: '#000',
-            fontFamily: FontFamily.SemiBold,
-            fontSize: 18,
-            alignSelf: 'stretch',
-            textAlign: 'center',
-          }}>
-          {(typeof hero.drawnTotal?.attack === 'number'
-            ? [`Attack: ${hero.drawnTotal.attack > 0 ? '+' : ''}${hero.drawnTotal.attack.toString()}`]
-            : []
-          )
-            .concat(hero.drawnTotal?.heal ? [`Heal: ${hero.drawnTotal.heal > 0 ? '+' : ''}${hero.drawnTotal.heal.toString()}`] : [])
-            .concat(hero.drawnTotal?.pierce ? [`Pierce: ${hero.drawnTotal.pierce > 0 ? '+' : ''}${hero.drawnTotal.pierce.toString()}`] : [])
-            .concat(
-              hero.drawnTotal?.targets ? [`Targets: ${hero.drawnTotal.targets > 0 ? '+' : ''}${hero.drawnTotal.targets.toString()}`] : []
-            )
-            .concat(hero.drawnTotal?.effects ? hero.drawnTotal.effects : [])
-            .join(' ')}
-        </Text>
-        <View style={{ alignItems: 'center' }}>
+        <Text style={styles.total}>{totalString}</Text>
+        <View style={styles.deckContainer}>
           <Deck hero={hero} onDraw={this.onDraw} />
         </View>
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 40,
-            height: 96,
-            flexDirection: 'row',
-            width: width - 32,
-            justifyContent: 'space-between',
-            alignItems: 'stretch',
-            marginHorizontal: 16,
-          }}>
-          <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => this.onAddBless(hero)}>
-            <Image source={bless} style={{ width: 70, height: 46, marginBottom: 16, resizeMode: 'contain' }} />
-            <Text style={{ textAlign: 'center', fontSize: 18 }}>{hero.blessesTotal}</Text>
+        <View style={styles.blessCurseContainer}>
+          <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddBless(hero)}>
+            <Image source={bless} style={styles.blessCurseImage} />
+            <Text style={styles.blessCurseCount}>{hero.blessesTotal}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ justifyContent: 'center' }} onPress={() => this.onAddCurse(hero)}>
-            <Image source={curse} style={{ width: 70, height: 46, marginBottom: 16, resizeMode: 'contain' }} />
-            <Text style={{ textAlign: 'center', fontSize: 18 }}>{hero.cursesTotal}</Text>
+          <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddCurse(hero)}>
+            <Image source={curse} style={styles.blessCurseImage} />
+            <Text style={styles.blessCurseCount}>{hero.cursesTotal}</Text>
           </TouchableOpacity>
         </View>
       </View>
