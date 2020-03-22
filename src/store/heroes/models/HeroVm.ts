@@ -22,3 +22,5 @@ export class HeroVm implements Partial<Hero> {
   drawn: Modifier[];
   upgrades: ClassUpgrade[];
 }
+
+export const mapVmToHero = (vm: HeroVm) => new Hero(vm.heroClass, vm.name, vm.defaultModifiers, { ...vm });

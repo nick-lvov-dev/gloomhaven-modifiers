@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { height } from 'src/core/Dimensions';
 import { FontFamily } from 'src/core/FontFamily';
+import { colors } from 'src/core/colors';
 
 export default StyleSheet.create({
   value: {
@@ -12,5 +13,5 @@ export default StyleSheet.create({
   },
   optionsModal: { marginTop: height * 0.2, marginHorizontal: 0, paddingHorizontal: 0 },
   optionsWrapper: { backgroundColor: '#fff' },
-  valueWrapper: { borderWidth: 1, borderRadius: 4, borderColor: '#ccc', overflow: 'hidden' },
+  valueWrapper: { borderWidth: 1, borderRadius: 4, borderColor: colors.light, overflow: 'hidden' },
 });

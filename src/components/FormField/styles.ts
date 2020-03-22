@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { FontFamily } from 'src/core/FontFamily';
+import { colors } from 'src/core/colors';
 
 export default StyleSheet.create({
   container: {
@@ -14,7 +15,7 @@ export default StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.light,
     borderRadius: 4,
     fontFamily: FontFamily.SemiBold,
     paddingHorizontal: 12,
@@ -23,7 +24,7 @@ export default StyleSheet.create({
   },
   picker: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.light,
     borderRadius: 4,
     fontFamily: FontFamily.Regular,
     paddingHorizontal: 8,

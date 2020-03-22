@@ -1,23 +1,17 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Text, View, TouchableOpacity, Image, Animated, TouchableWithoutFeedback, ToastAndroid, Easing } from 'react-native';
+import React, { Component } from 'react';
+import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
-import { RouteProp } from '@react-navigation/native';
-import { updateHero } from 'src/store/heroes/heroes';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { FontFamily } from 'src/core/FontFamily';
-import { reload } from 'assets/images';
-import { width } from 'src/core/Dimensions';
-import { HeroVm } from 'src/store/heroes/models/HeroVm';
+import { reload, trash } from 'assets/images';
+import { HeroVm, mapVmToHero } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
-import { nameof } from 'src/common/nameof';
 import { HeroClass } from 'src/core/HeroClass';
-import TouchableView from 'src/components/TouchableView/TouchableView';
 import Deck from './components/Deck';
-
-const screenName = nameof<RootStackParamsList>('HeroView');
+import { isEqual } from 'lodash';
+import { bless, curse } from 'assets/images/modifiers/base';
+import { removeHero } from 'src/store/heroes/heroes';
+import { activeOpacity } from 'src/core/contstants';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -26,113 +20,109 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  update: (hero: Hero) => void;
+  delete: (heroName: string) => void;
 }
 
 interface OwnProps {
-  navigation: StackNavigationProp<RootStackParamsList, typeof screenName>;
-  route: RouteProp<RootStackParamsList, typeof screenName>;
+  heroName: string;
 }
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-const HeroView = ({ heroes, blessCount, heroCurseCount, route, navigation, update }: Props) => {
-  const heroVm = route.params?.hero
-    ? heroes.find(x => route.params!.hero === x.name)
-    : heroes.find(x => x.heroClass === HeroClass.Monsters);
-  if (!heroVm)
+interface State {
+  heroModel: HeroVm;
+}
+
+class HeroView extends Component<Props, State> {
+  state: State = {
+    heroModel: this.props.heroes.find(x => x.name === this.props.heroName)!,
+  };
+
+  componentDidUpdate({ heroes }: Props) {
+    if (!isEqual(heroes, this.props.heroes)) {
+      this.setState({ heroModel: this.props.heroes.find(x => x.name === this.props.heroName)! });
+    }
+  }
+  get isMonster() {
+    return this.state.heroModel.heroClass === HeroClass.Monsters;
+  }
+  getOtherCursesCount = (hero: Hero) => {
+    return this.isMonster ? 0 : this.props.heroCurseCount - hero.cursesTotal;
+  };
+  getOtherBlessesCount = (hero: Hero) => {
+    return this.props.blessCount - hero.blessesTotal;
+  };
+
+  onDraw = (hero: Hero) => this.setState({ heroModel: new HeroVm(hero) });
+
+  onShuffle = (hero: Hero) => {
+    hero.shuffle(true);
+    this.setState({ heroModel: new HeroVm(hero) });
+  };
+
+  onAddBless = (hero: Hero) => {
+    if (this.getOtherBlessesCount(hero) + hero.blessesTotal === 10) return;
+    hero.addBless();
+    this.setState({ heroModel: new HeroVm(hero) });
+  };
+
+  onAddCurse = (hero: Hero) => {
+    if (this.getOtherCursesCount(hero) + hero.cursesTotal === 10) return;
+    hero.addCurse();
+    this.setState({ heroModel: new HeroVm(hero) });
+  };
+
+  delete = () => this.props.delete(this.props.heroName);
+
+  render() {
+    const hero = mapVmToHero(this.state.heroModel);
+    const totalString = (typeof hero.drawnTotal?.attack === 'number'
+      ? [`Attack: ${hero.drawnTotal.attack > 0 ? '+' : ''}${hero.drawnTotal.attack.toString()}`]
+      : []
+    )
+      .concat(hero.drawnTotal?.heal ? [`Heal: ${hero.drawnTotal.heal > 0 ? '+' : ''}${hero.drawnTotal.heal.toString()}`] : [])
+      .concat(hero.drawnTotal?.pierce ? [`Pierce: ${hero.drawnTotal.pierce > 0 ? '+' : ''}${hero.drawnTotal.pierce.toString()}`] : [])
+      .concat(hero.drawnTotal?.targets ? [`Targets: ${hero.drawnTotal.targets > 0 ? '+' : ''}${hero.drawnTotal.targets.toString()}`] : [])
+      .concat(hero.drawnTotal?.effects ? hero.drawnTotal.effects : [])
+      .join(' ');
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Failed to load Hero. Please restart the app.</Text>
+      <View style={styles.container}>
+        {!this.isMonster && (
+          <TouchableOpacity activeOpacity={activeOpacity} style={styles.deleteWrapper} onPress={this.delete}>
+            <Image source={trash} style={styles.delete} />
+          </TouchableOpacity>
+        )}
+        <View>
+          <Text style={styles.remaining}>Remaining: {hero.remainingModifiers.length}</Text>
+          <TouchableOpacity style={styles.shuffleWrapper} onPress={() => this.onShuffle(hero)} activeOpacity={activeOpacity}>
+            <Image source={reload} style={styles.shuffle} />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.total}>{totalString}</Text>
+        <View style={styles.deckContainer}>
+          <Deck hero={hero} onDraw={this.onDraw} />
+        </View>
+        <View style={styles.blessCurseContainer}>
+          <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddBless(hero)}>
+            <Image source={bless} style={styles.blessCurseImage} />
+            <Text style={styles.blessCurseCount}>{hero.blessesTotal}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddCurse(hero)}>
+            <Image source={curse} style={styles.blessCurseImage} />
+            <Text style={styles.blessCurseCount}>{hero.cursesTotal}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
-
-  const isMonster = heroVm.heroClass === HeroClass.Monsters;
-  const [heroModel, setHeroModel] = useState(heroVm);
-  const hero = new Hero(heroModel.heroClass, heroModel.name, heroModel.defaultModifiers, { ...heroModel });
-  const otherCursesCount = useMemo(() => (isMonster ? 0 : heroCurseCount - hero.cursesTotal), [isMonster, heroCurseCount]);
-  const otherBlessesCount = useMemo(() => blessCount - hero.blessesTotal, [blessCount]);
-
-  const onDraw = (hero: Hero) => setHeroModel(new HeroVm(hero));
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('blur', () => {
-      update(hero);
-    });
-    return unsubscribe;
-  }, [navigation, hero]);
-
-  return (
-    <View style={styles.container}>
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignSelf: 'stretch' }}>
-        <Text style={{ fontFamily: FontFamily.SemiBold, fontSize: 24, textAlign: 'center', marginBottom: 12 }}>{hero.name}</Text>
-        <TouchableOpacity
-          style={{ position: 'absolute', right: 32, backgroundColor: '#666', padding: 8, paddingLeft: 9, borderRadius: 24 }}
-          onPress={() => {
-            hero.shuffle(true);
-            setHeroModel(new HeroVm(hero));
-          }}>
-          <Image source={reload} style={{ width: 24, height: 24 }} />
-        </TouchableOpacity>
-      </View>
-      <Text style={{ fontFamily: FontFamily.SemiBold, fontSize: 14, textAlign: 'center', marginBottom: 24 }}>
-        Remaining: {hero.remainingModifiers.length}
-      </Text>
-      <Deck hero={hero} onDraw={onDraw} />
-      <Text style={{ marginTop: 32, color: '#000', alignSelf: 'stretch', textAlign: 'center' }}>
-        {(typeof hero.drawnTotal?.attack === 'number'
-          ? [`Attack: ${hero.drawnTotal.attack > 0 ? '+' : ''}${hero.drawnTotal.attack.toString()}`]
-          : []
-        )
-          .concat(hero.drawnTotal?.heal ? [`Heal: ${hero.drawnTotal.heal > 0 ? '+' : ''}${hero.drawnTotal.heal.toString()}`] : [])
-          .concat(hero.drawnTotal?.pierce ? [`Pierce: ${hero.drawnTotal.pierce > 0 ? '+' : ''}${hero.drawnTotal.pierce.toString()}`] : [])
-          .concat(
-            hero.drawnTotal?.targets ? [`Targets: ${hero.drawnTotal.targets > 0 ? '+' : ''}${hero.drawnTotal.targets.toString()}`] : []
-          )
-          .concat(hero.drawnTotal?.effects ? hero.drawnTotal.effects : [])
-          .join(' ')}
-      </Text>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          height: 96,
-          flexDirection: 'row',
-          width: width,
-          justifyContent: 'space-around',
-          alignItems: 'stretch',
-        }}>
-        <TouchableOpacity
-          style={{ flex: 1, justifyContent: 'center' }}
-          onPress={() => {
-            if (otherBlessesCount + hero.blessesTotal === 10) return;
-
-            hero.addBless();
-            setHeroModel(new HeroVm(hero));
-          }}>
-          <Text style={{ textAlign: 'center', fontSize: 18 }}>Bless</Text>
-          <Text style={{ textAlign: 'center' }}>{hero.blessesTotal}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ flex: 1, justifyContent: 'center' }}
-          onPress={() => {
-            if (otherCursesCount + hero.cursesTotal === 10) return;
-
-            hero.addCurse();
-            setHeroModel(new HeroVm(hero));
-          }}>
-          <Text style={{ textAlign: 'center', fontSize: 18 }}>Curse</Text>
-          <Text style={{ textAlign: 'center' }}>{hero.cursesTotal}</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
+  }
+}
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(
   state => {
     const { heroes, blessCount, heroCurseCount } = state.heroes;
     return { heroes, blessCount, heroCurseCount };
   },
-  { update: updateHero }
+  { delete: removeHero },
+  null,
+  { forwardRef: true }
 )(HeroView);

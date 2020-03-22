@@ -6,6 +6,7 @@ import { Hero } from 'src/core/Hero/Hero';
 import { HeroVm } from './models/HeroVm';
 import { curse, bless } from 'assets/images/modifiers/base';
 import { monsterCurse } from 'assets/images/modifiers/monster';
+import { cloneDeep } from 'lodash';
 
 const HEROES_STORAGE_KEY = 'HEROES_STORAGE_KEY';
 
@@ -35,13 +36,16 @@ const slice = createSlice({
   name: 'heroes',
   initialState,
   reducers: {
-    setHeroes: (state, action: PayloadAction<HeroVm[]>) =>
-      produce(state, draft => {
-        draft.heroes = action.payload;
-        draft.heroesLoaded = true;
-        draft.blessCount = getBlessCount(draft.heroes);
-        draft.heroCurseCount = getHeroCurseCount(draft.heroes);
-      }),
+    setHeroes: (state, action: PayloadAction<HeroVm[]>) => {
+      const heroes = action.payload;
+      return {
+        ...state,
+        heroes: [...heroes],
+        heroesLoaded: true,
+        blessCount: getBlessCount(heroes),
+        heroCurseCount: getHeroCurseCount(heroes),
+      };
+    },
     setLoading: (state, action: PayloadAction<boolean>) =>
       produce(state, draft => {
         draft.isLoading = action.payload;
@@ -61,29 +65,29 @@ export const loadHeroes = () => async (dispatch: Dispatch) => {
   dispatch(setLoading(false));
 };
 
-export const addHero = (hero: Hero) => async (dispatch: Dispatch, getState: () => RootState) => {
+export const addHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
   const heroes = getState().heroes.heroes;
   if (heroes.some(x => x.name === hero.name)) {
     dispatch(setLoading(false));
     return;
   }
-  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([new HeroVm(hero)])));
-  dispatch(setHeroes(heroes.concat([new HeroVm(hero)])));
+  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([hero])));
+  dispatch(setHeroes(heroes.concat([cloneDeep(hero)])));
   dispatch(setLoading(false));
 };
 
-export const updateHero = (hero: Hero) => async (dispatch: Dispatch, getState: () => RootState) => {
+export const updateHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
-  const heroes = getState().heroes.heroes.map(x => (x.name === hero.name ? new HeroVm(hero) : x));
+  const heroes = getState().heroes.heroes.map(x => (x.name === hero.name ? cloneDeep(hero) : x));
   await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
   dispatch(setHeroes(heroes));
   dispatch(setLoading(false));
 };
 
-export const removeHero = (hero: Hero | HeroVm | string) => async (dispatch: Dispatch, getState: () => RootState) => {
+export const removeHero = (heroName: string) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
-  const heroes = getState().heroes.heroes.filter(x => x.name !== (typeof hero === 'string' ? hero : hero.name));
+  const heroes = getState().heroes.heroes.filter(x => x.name !== heroName);
   await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
   dispatch(setHeroes(heroes));
   dispatch(setLoading(false));

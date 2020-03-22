@@ -3,7 +3,7 @@ import { Hero } from 'src/core/Hero/Hero';
 import TouchableView from 'src/components/TouchableView/TouchableView';
 import { Animated, Easing, Image, View } from 'react-native';
 import styles from './styles';
-import modifierStyles, { modifierHeight } from './components/styles';
+import modifierStyles from './components/styles';
 import { empty, cardShadow } from 'assets/images';
 import ModifierView from './components/ModifierView';
 import { Modifier } from 'src/core/Modifiers/models/Modifier';
@@ -18,14 +18,14 @@ interface AnimatedValueSub<T> {
   value: T;
 }
 
-const animationDuration = 300;
+const animationDuration = 200;
 const drawNextDelay = 50;
 const drawnCardTopOffset = 40;
 const effectiveSwipeLength = 40;
 const effectiveDragLength = 20;
 const drawHistoryCardMargin = 12;
 const effectiveSpeed = 0.5;
-const movingModifierHeight = modifierHeight + drawHistoryCardMargin;
+const movingModifierHeight = modifierStyles.modifier.height + drawHistoryCardMargin;
 const bezier = Easing.bezier(0.25, 0.1, 0.25, 1);
 
 const getModifierCardOffset = (drawn: Modifier[], index: number) => -movingModifierHeight * (drawn.length - index - 1);
@@ -168,7 +168,7 @@ export default ({ hero, onDraw }: Props) => {
         if (Math.abs(speed) >= effectiveSpeed) {
           const maxTopValue = initialOffset - getMaxCardTopValue(drawn);
           const toValue = -speed * animationDuration + pageY + currentDragOffset.current;
-          const goingHome = toValue >= initialOffset - modifierHeight;
+          const goingHome = toValue >= initialOffset - modifierStyles.modifier.height;
           const overboard = toValue <= maxTopValue;
           if (overboard) {
             Animated.spring(animatedCardTop, {
@@ -195,7 +195,7 @@ export default ({ hero, onDraw }: Props) => {
         }
 
         // drag ended on a card, reset position
-        if (currentDragOffset.current && animatedCardTopValue.current.value < modifierHeight) {
+        if (currentDragOffset.current && animatedCardTopValue.current.value < modifierStyles.modifier.height) {
           Animated.timing(animatedCardTop, {
             toValue: initialOffset,
             duration: animationDuration,
@@ -214,9 +214,9 @@ export default ({ hero, onDraw }: Props) => {
 
         {/* Static top card */}
         {lastDrawn2 && isDrawing ? (
-          <ModifierView modifier={lastDrawn2} style={{ position: 'absolute' }} />
+          <ModifierView modifier={lastDrawn2} style={styles.staticModifier} />
         ) : lastDrawn && !isDrawing && !isDragging ? (
-          <ModifierView modifier={lastDrawn} style={{ position: 'absolute' }} />
+          <ModifierView modifier={lastDrawn} style={styles.staticModifier} />
         ) : null}
 
         {/* Static shadow */}
@@ -261,21 +261,22 @@ export default ({ hero, onDraw }: Props) => {
           })}
           {drawn.length > 1 ? (
             <Animated.View
-              style={{
-                position: 'absolute',
-                left: 2,
-                top: animatedCardTop.interpolate(getShadowInterpolation(drawn)),
-                // hide shadow when one card is left
-                opacity: animatedCardTop.interpolate({
-                  inputRange: [
-                    getModifierCardOffset(drawn, 0) - 1,
-                    getModifierCardOffset(drawn, 0),
-                    getModifierCardOffset(drawn, 0) + 1,
-                    getModifierCardOffset(drawn, 1),
-                  ],
-                  outputRange: [0, 0, 1, 1],
-                }),
-              }}>
+              style={[
+                styles.historyShadow,
+                {
+                  top: animatedCardTop.interpolate(getShadowInterpolation(drawn)),
+                  // hide shadow when one card is left
+                  opacity: animatedCardTop.interpolate({
+                    inputRange: [
+                      getModifierCardOffset(drawn, 0) - 1,
+                      getModifierCardOffset(drawn, 0),
+                      getModifierCardOffset(drawn, 0) + 1,
+                      getModifierCardOffset(drawn, 1),
+                    ],
+                    outputRange: [0, 0, 1, 1],
+                  }),
+                },
+              ]}>
               <Image source={cardShadow} style={[modifierStyles.modifier]} />
             </Animated.View>
           ) : null}
