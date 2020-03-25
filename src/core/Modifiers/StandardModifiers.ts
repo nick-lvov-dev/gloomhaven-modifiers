@@ -21,8 +21,8 @@ const StandardModifiers: {
   MinusTwo: { id: nameof<typeof baseModifiers>('nTwo'), image: baseModifiers.nTwo, attack: -2 },
   Double: { id: nameof<typeof baseModifiers>('double'), image: baseModifiers.double, shuffle: true, effects: [ModifierEffect.Double] },
   NoDamage: { id: nameof<typeof baseModifiers>('noDmg'), image: baseModifiers.noDmg, shuffle: true, effects: [ModifierEffect.NoAttack] },
-  Curse: { id: nameof<typeof baseModifiers>('curse'), image: baseModifiers.curse, effects: [ModifierEffect.Double] },
-  Bless: { id: nameof<typeof baseModifiers>('bless'), image: baseModifiers.bless, effects: [ModifierEffect.NoAttack] },
+  Curse: { id: nameof<typeof baseModifiers>('curse'), image: baseModifiers.curse, effects: [ModifierEffect.NoAttack] },
+  Bless: { id: nameof<typeof baseModifiers>('bless'), image: baseModifiers.bless, effects: [ModifierEffect.Double] },
 };
 
 export default StandardModifiers;
