@@ -40,8 +40,8 @@ export default StyleSheet.create({
   deleteWrapper: { position: 'absolute', top: 16, right: 16 },
   delete: { height: 24, width: 24, resizeMode: 'contain', tintColor: colors.dark },
   remaining: { fontFamily: FontFamily.SemiBold, fontSize: 14, textAlign: 'center', marginBottom: 24 },
-  shuffleWrapper: { position: 'absolute', right: 32, top: -10, backgroundColor: colors.dark, padding: 8, paddingLeft: 9, borderRadius: 24 },
-  shuffle: { width: 24, height: 24 },
+  shuffleWrapper: { position: 'absolute', right: 32, top: -10, backgroundColor: colors.dark, padding: 8, paddingLeft: 9, paddingRight: 7, borderRadius: 20 },
+  shuffle: { width: 24, height: 24, resizeMode: 'contain' },
   total: {
     color: '#000',
     fontFamily: FontFamily.SemiBold,
