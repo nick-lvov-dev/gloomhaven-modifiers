@@ -7,6 +7,8 @@ import modifierStyles from './components/styles';
 import { empty, cardShadow } from 'assets/images';
 import ModifierView from './components/ModifierView';
 import { Modifier } from 'src/core/Modifiers/models/Modifier';
+import { toast } from 'src/common/helpers/toast.helper';
+import Toast from 'react-native-root-toast';
 
 interface Props {
   hero: Hero;
@@ -116,16 +118,15 @@ export default ({ hero, onDraw }: Props) => {
       onGrant={({ nativeEvent: { pageY } }) => {
         animatedCardTop.stopAnimation();
         currentDragOffset.current = initialOffset ? initialOffset + dragDistance.current - pageY : 0;
-      }}
-      onMove={({ nativeEvent: { pageY } }) => {
         if (!isMoving) {
           setIsMoving(true);
-          setInitialOffset(pageY);
+          if (!initialOffset) setInitialOffset(pageY);
           animatedCardTop.setOffset(-pageY);
           animatedCardTopValue.current.sub = animatedCardTop.addListener(({ value }) => (animatedCardTopValue.current.value = value));
           dragDistance.current = 0;
         }
-
+      }}
+      onMove={({ nativeEvent: { pageY } }) => {
         if (!isDragging) {
           if (Math.round(initialOffset) - Math.round(pageY) >= effectiveDragLength) {
             setIsDragging(true);
@@ -195,7 +196,9 @@ export default ({ hero, onDraw }: Props) => {
         }
 
         // drag ended on a card, reset position
-        if (currentDragOffset.current && animatedCardTopValue.current.value < modifierStyles.modifier.height) {
+        if (isDragging && currentCardTopOffset < modifierStyles.modifier.height) {
+          toast(animatedCardTopValue.current.value.toString());
+          toast(modifierStyles.modifier.height.toString(), Toast.positions.TOP);
           Animated.timing(animatedCardTop, {
             toValue: initialOffset,
             duration: animationDuration,
