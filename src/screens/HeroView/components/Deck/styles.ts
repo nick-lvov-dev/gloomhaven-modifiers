@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import modifierStyles from './components/styles';
+import { getModifierStyle } from '../ModifierView/ModifierView';
 
 export default StyleSheet.create({
   container: {
@@ -8,7 +8,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   draw: {
-    ...modifierStyles.modifier,
+    ...getModifierStyle(),
     marginVertical: 32,
     alignItems: 'center',
     justifyContent: 'center',

@@ -3,9 +3,9 @@ import { Hero } from 'src/core/Hero/Hero';
 import TouchableView from 'src/components/TouchableView/TouchableView';
 import { Animated, Easing, Image, View } from 'react-native';
 import styles from './styles';
-import modifierStyles from './components/styles';
+import modifierStyles from '../ModifierView/styles';
 import { empty, cardShadow } from 'assets/images';
-import ModifierView from './components/ModifierView';
+import ModifierView, { getModifierStyle } from '../ModifierView/ModifierView';
 import { Modifier } from 'src/core/Modifiers/models/Modifier';
 
 interface Props {
@@ -25,7 +25,8 @@ const effectiveSwipeLength = 40;
 const effectiveDragLength = 20;
 const drawHistoryCardMargin = 12;
 const effectiveSpeed = 0.5;
-const movingModifierHeight = modifierStyles.modifier.height + drawHistoryCardMargin;
+const modifierStyle = getModifierStyle();
+const movingModifierHeight = modifierStyle.height + drawHistoryCardMargin;
 const bezier = Easing.bezier(0.25, 0.1, 0.25, 1);
 
 const getModifierCardOffset = (drawn: Modifier[], index: number) => -movingModifierHeight * (drawn.length - index - 1);
@@ -167,7 +168,7 @@ export default ({ hero, onDraw }: Props) => {
         if (Math.abs(speed) >= effectiveSpeed) {
           const maxTopValue = initialOffset - getMaxCardTopValue(drawn);
           const toValue = -speed * animationDuration + pageY + currentDragOffset.current;
-          const goingHome = toValue >= initialOffset - modifierStyles.modifier.height;
+          const goingHome = toValue >= initialOffset - modifierStyle.height;
           const overboard = toValue <= maxTopValue;
           if (overboard) {
             Animated.spring(animatedCardTop, {
@@ -194,7 +195,7 @@ export default ({ hero, onDraw }: Props) => {
         }
 
         // drag ended on a card, reset position
-        if (isDragging && currentCardTopOffset < modifierStyles.modifier.height) {
+        if (isDragging && currentCardTopOffset < modifierStyle.height) {
           Animated.timing(animatedCardTop, {
             toValue: initialOffset,
             duration: animationDuration,
@@ -207,9 +208,9 @@ export default ({ hero, onDraw }: Props) => {
 
         dragDistance.current = animatedCardTopValue.current.value;
       }}>
-      <View style={modifierStyles.modifier}>
+      <View style={modifierStyle}>
         {/* Placeholder */}
-        <Image source={empty} style={modifierStyles.modifier} />
+        <Image source={empty} style={modifierStyle} />
 
         {/* Static top card */}
         {lastDrawn2 && isDrawing ? (
@@ -223,7 +224,7 @@ export default ({ hero, onDraw }: Props) => {
           <Image
             source={cardShadow}
             // top: 2,3,4 for 1,2,3+ cards respectively
-            style={[modifierStyles.modifier, modifierStyles.shadow, { top: Math.min(1 + drawn.length, 4), zIndex: -1 }]}
+            style={[modifierStyle, modifierStyles.shadow, { top: Math.min(1 + drawn.length, 4), zIndex: -1 }]}
           />
         ) : null}
       </View>
@@ -276,7 +277,7 @@ export default ({ hero, onDraw }: Props) => {
                   }),
                 },
               ]}>
-              <Image source={cardShadow} style={[modifierStyles.modifier]} />
+              <Image source={cardShadow} style={[modifierStyle]} />
             </Animated.View>
           ) : null}
         </>
