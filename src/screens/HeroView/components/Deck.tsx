@@ -7,8 +7,6 @@ import modifierStyles from './components/styles';
 import { empty, cardShadow } from 'assets/images';
 import ModifierView from './components/ModifierView';
 import { Modifier } from 'src/core/Modifiers/models/Modifier';
-import { toast } from 'src/common/helpers/toast.helper';
-import Toast from 'react-native-root-toast';
 
 interface Props {
   hero: Hero;
@@ -197,8 +195,6 @@ export default ({ hero, onDraw }: Props) => {
 
         // drag ended on a card, reset position
         if (isDragging && currentCardTopOffset < modifierStyles.modifier.height) {
-          toast(animatedCardTopValue.current.value.toString());
-          toast(modifierStyles.modifier.height.toString(), Toast.positions.TOP);
           Animated.timing(animatedCardTop, {
             toValue: initialOffset,
             duration: animationDuration,
