@@ -30,7 +30,7 @@ const MonsterModifiers: {
     shuffle: true,
     effects: [ModifierEffect.NoAttack],
   },
-  Curse: { id: nameof<typeof monsterModifiers>('monsterCurse'), image: monsterModifiers.monsterCurse, effects: [ModifierEffect.Double] },
+  Curse: { id: nameof<typeof monsterModifiers>('monsterCurse'), image: monsterModifiers.monsterCurse, effects: [ModifierEffect.NoAttack] },
 };
 
 export default MonsterModifiers;
