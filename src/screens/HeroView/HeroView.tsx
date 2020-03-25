@@ -3,16 +3,17 @@ import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { reload, trash } from 'assets/images';
+import { reload, trash, advantageDisadvantage } from 'assets/images';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
-import Deck from './components/Deck';
+import Deck from './components/Deck/Deck';
 import { isEqual } from 'lodash';
 import { bless, curse } from 'src/core/images/modifiers/base';
 import { removeHero } from 'src/store/heroes/heroes';
 import { activeOpacity } from 'src/core/contstants';
 import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
+import DrawTwo from './components/DrawTwo/DrawTwo';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -32,11 +33,13 @@ type Props = StateProps & OwnProps & DispatchProps;
 
 interface State {
   heroModel: HeroVm;
+  isDrawTwo: boolean;
 }
 
 class HeroView extends Component<Props, State> {
   state: State = {
     heroModel: this.props.heroes.find(x => x.name === this.props.heroName)!,
+    isDrawTwo: false,
   };
 
   componentDidUpdate({ heroes }: Props) {
@@ -46,6 +49,10 @@ class HeroView extends Component<Props, State> {
   }
   get isMonster() {
     return this.state.heroModel.heroClass === HeroClass.Monsters;
+  }
+
+  get hero() {
+    return mapVmToHero(this.state.heroModel);
   }
   getOtherCursesCount = (hero: Hero) => {
     return this.isMonster ? 0 : this.props.heroCurseCount - hero.cursesTotal;
@@ -73,48 +80,55 @@ class HeroView extends Component<Props, State> {
     this.setState({ heroModel: new HeroVm(hero) });
   };
 
+  onDrawTwo = () => this.setState({ isDrawTwo: true });
+
+  onDrawTwoClose = (hero: Hero) => this.setState({ isDrawTwo: false, heroModel: new HeroVm(hero) });
+
   delete = () => this.props.delete(this.props.heroName);
 
   render() {
-    const hero = mapVmToHero(this.state.heroModel);
+    const hero = this.hero;
     const total = hero.drawnTotal;
-    const totalString = (typeof total?.attack === 'number'
-      ? [`Attack: ${total.attack > 0 ? '+' : ''}${total.attack.toString()}`]
-      : []
-    )
-      .concat(total?.heal ? [`Heal: ${total.heal > 0 ? '+' : ''}${total.heal.toString()}`] : [])
-      .concat(total?.pierce ? [`Pierce: ${total.pierce > 0 ? '+' : ''}${total.pierce.toString()}`] : [])
-      .concat(total?.targets ? [`Targets: ${total.targets > 0 ? '+' : ''}${total.targets.toString()}`] : [])
-      .concat(total?.effects ? total.effects : [])
-      .join(' ');
+
     return (
-      <View style={styles.container}>
-        {!this.isMonster && (
-          <TouchableOpacity activeOpacity={activeOpacity} style={styles.deleteWrapper} onPress={this.delete}>
-            <Image source={trash} style={styles.delete} />
-          </TouchableOpacity>
-        )}
-        <View>
-          <Text style={styles.remaining}>Remaining: {hero.remainingModifiers.length}</Text>
-          <TouchableOpacity style={styles.shuffleWrapper} onPress={() => this.onShuffle(hero)} activeOpacity={activeOpacity}>
-            <Image source={reload} style={styles.shuffle} />
-          </TouchableOpacity>
+      <>
+        <DrawTwo hero={this.state.heroModel} visible={this.state.isDrawTwo} onClose={this.onDrawTwoClose} />
+        <View style={styles.container}>
+          <View style={styles.actions}>
+            <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo} style={styles.action}>
+              <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.shuffleWrapper, styles.action]}
+              onPress={() => this.onShuffle(hero)}
+              activeOpacity={activeOpacity}>
+              <Image source={reload} style={styles.shuffle} />
+            </TouchableOpacity>
+            {!this.isMonster && (
+              <TouchableOpacity activeOpacity={activeOpacity} onPress={this.delete} style={styles.action}>
+                <Image source={trash} style={styles.delete} />
+              </TouchableOpacity>
+            )}
+          </View>
+          <View>
+            <Text style={styles.remaining}>Remaining: {hero.remainingModifiers.length}</Text>
+          </View>
+          <Text style={styles.total}>{total}</Text>
+          <View style={styles.deckContainer}>
+            <Deck hero={hero} onDraw={this.onDraw} />
+          </View>
+          <View style={styles.blessCurseContainer}>
+            <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddBless(hero)}>
+              <Image source={bless} style={styles.blessCurseImage} />
+              <Text style={styles.blessCurseCount}>{hero.blessesTotal}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddCurse(hero)}>
+              <Image source={curse} style={styles.blessCurseImage} />
+              <Text style={styles.blessCurseCount}>{hero.cursesTotal}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={styles.total}>{totalString}</Text>
-        <View style={styles.deckContainer}>
-          <Deck hero={hero} onDraw={this.onDraw} />
-        </View>
-        <View style={styles.blessCurseContainer}>
-          <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddBless(hero)}>
-            <Image source={bless} style={styles.blessCurseImage} />
-            <Text style={styles.blessCurseCount}>{hero.blessesTotal}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddCurse(hero)}>
-            <Image source={curse} style={styles.blessCurseImage} />
-            <Text style={styles.blessCurseCount}>{hero.cursesTotal}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </>
     );
   }
 }

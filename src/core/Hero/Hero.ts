@@ -13,6 +13,11 @@ class HeroOptions implements Partial<Hero> {
   upgrades?: ClassUpgrade[];
 }
 
+export interface DrawResult {
+  drawn: Modifier[];
+  total: string;
+}
+
 export class Hero {
   private _defaultModifiers: Modifier[];
   private _currentModifiers: Modifier[];
@@ -78,27 +83,46 @@ export class Hero {
     }
 
     total.effects = uniq(total.effects);
-    return total;
+    return (typeof total?.attack === 'number' ? [`Attack: ${total.attack > 0 ? '+' : ''}${total.attack.toString()}`] : [])
+      .concat(total?.heal ? [`Heal: ${total.heal > 0 ? '+' : ''}${total.heal.toString()}`] : [])
+      .concat(total?.pierce ? [`Pierce: ${total.pierce > 0 ? '+' : ''}${total.pierce.toString()}`] : [])
+      .concat(total?.targets ? [`Targets: ${total.targets > 0 ? '+' : ''}${total.targets.toString()}`] : [])
+      .concat(total?.effects ? total.effects : [])
+      .join(' ');
   }
 
   lastDrawn = (n = 1) => (this._drawn.length >= n ? this._drawn.slice(-n)[0] : null);
 
   get cursesTotal() {
-    return this._currentModifiers.filter(x => x.image === StandardModifiers.Curse.image).length;
+    return this._currentModifiers.filter(x => x.id === StandardModifiers.Curse.id).length;
   }
 
   get blessesTotal() {
-    return this._currentModifiers.filter(x => x.image === StandardModifiers.Bless.image).length;
+    return this._currentModifiers.filter(x => x.id === StandardModifiers.Bless.id).length;
   }
 
   draw = () => {
-    if (this.lastDrawn()?.shuffle) this.shuffle();
+    this._shuffleCheck();
+    this._draw();
+  };
 
-    const index = random(this._remainingModifiers.length);
-    const modifier = this._remainingModifiers[index];
-    this._drawn.push(modifier);
-    if ([StandardModifiers.Curse.image, StandardModifiers.Bless.image].includes(modifier.image)) this._removeModifier(modifier);
-    this._remainingModifiers.splice(index, 1);
+  drawTwo = (): DrawResult[] => {
+    this._shuffleCheck();
+    let drawn: Modifier[] = [];
+    do {
+      this._draw();
+      drawn.push(this.lastDrawn()!);
+    } while (this.lastDrawn()?.next);
+    const firstResult: DrawResult = { drawn: [...drawn], total: this.drawnTotal! };
+
+    drawn = [];
+    do {
+      this._draw();
+      drawn.push(this.lastDrawn()!);
+    } while (this.lastDrawn()?.next);
+    const secondResult: DrawResult = { drawn: [...drawn], total: this.drawnTotal! };
+
+    return [firstResult, secondResult];
   };
 
   shuffle = (clean = false) => {
@@ -134,6 +158,18 @@ export class Hero {
     this.shuffle(true);
   };
 
+  private _draw = () => {
+    const index = random(this._remainingModifiers.length);
+    const modifier = this._remainingModifiers[index];
+    this._removeBlessCurse(modifier);
+    this._drawn.push(modifier);
+    this._remainingModifiers.splice(index, 1);
+  };
+
+  private _shuffleCheck = () => {
+    if (this._drawn.some(x => x.shuffle)) this.shuffle();
+  };
+
   private _addUpgrade = (upgrade: ClassUpgrade) => {
     if (this._upgrades.filter(x => x.name === upgrade.name).length >= upgrade.limit) return;
 
@@ -142,7 +178,7 @@ export class Hero {
         this._defaultModifiers.push(upgrade.modifier);
       }
 
-    if (upgrade.subModifier) this._removeModifier(upgrade.subModifier, true, upgrade.count);
+    if (upgrade.subModifier) this._cleanModifier(upgrade.subModifier, upgrade.count);
     this._upgrades.push(cloneDeep(upgrade));
   };
 
@@ -155,25 +191,27 @@ export class Hero {
         this._defaultModifiers.push(upgrade.subModifier);
       }
 
-    if (upgrade.modifier) this._removeModifier(upgrade.modifier, true, upgrade.count);
+    if (upgrade.modifier) this._cleanModifier(upgrade.modifier, upgrade.count);
     this._upgrades.splice(index, 1);
   };
 
-  private _removeModifier = (modifier: Modifier, completely = false, count = 1) => {
-    if (!completely) {
+  private _removeBlessCurse = (modifier: Modifier) => {
+    if ([StandardModifiers.Curse.id, StandardModifiers.Bless.id].some(x => x === modifier.id))
       this._currentModifiers.splice(
-        this._currentModifiers.findIndex(x => x.image === modifier.image),
+        this._currentModifiers.findIndex(x => x.id === modifier.id),
         1
       );
-      return;
-    }
+  };
 
-    for (let i = 0; i < count; i++) {
-      this._defaultModifiers.splice(
-        this._currentModifiers.findIndex(x => x.image === modifier.image),
-        1
-      );
-    }
+  private _cleanModifier = (modifier: Modifier, count?: number) => {
+    if (count)
+      for (let i = 0; i < count; i++) {
+        this._defaultModifiers.splice(
+          this._currentModifiers.findIndex(x => x.id === modifier.id),
+          1
+        );
+      }
+    else this._defaultModifiers = this._defaultModifiers.filter(x => x.id !== modifier.id);
 
     this._currentModifiers = cloneDeep(this._defaultModifiers);
     this._remainingModifiers = cloneDeep(this._defaultModifiers);
