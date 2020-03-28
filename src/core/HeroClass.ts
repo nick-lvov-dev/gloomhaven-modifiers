@@ -3,6 +3,7 @@ import heroIcons from 'src/core/images/heroIcons';
 export const HeroClass = {
   Scoundrel: 'Scoundrel',
   Tinkerer: 'Tinkerer',
+  Tyrant: 'Tyrant',
   Monsters: 'Monsters',
 };
 

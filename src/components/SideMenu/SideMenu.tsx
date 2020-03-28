@@ -13,6 +13,7 @@ type Props = {
   backdropColor?: string;
   backdropOpacity?: number;
   dragActionLength?: number;
+  extendLength?: number;
 } & Readonly<{ children?: ReactNode }>;
 const bezier = Easing.bezier(0.25, 0.1, 0.25, 1);
 
@@ -27,39 +28,48 @@ export default ({
   backdropColor = '#000',
   backdropOpacity = 0.2,
   dragActionLength = menuWidth / 3,
+  extendLength = 0,
   children,
 }: Props) => {
-  const [animatedLeft] = useState(new Animated.Value(isOpen ? 0 : -menuWidth));
+  const closedPosition = -menuWidth + extendLength;
+  const [animatedLeft] = useState(new Animated.Value(isOpen ? 0 : closedPosition));
   const dragState = useRef(0);
   useEffect(() => {
     Animated.timing(animatedLeft, {
-      toValue: isOpen ? 0 : -menuWidth,
+      toValue: isOpen ? 0 : closedPosition,
       duration: animationDuration,
       easing: Easing.in(animationFunc),
     }).start();
   }, [isOpen]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingLeft: extendLength / 2 }]}>
       <Animated.View
         style={[styles.menu, { width: menuWidth, left: animatedLeft, zIndex: 2 }]}
-        onStartShouldSetResponder={() => isOpen}
+        onStartShouldSetResponder={() => true}
         onResponderTerminationRequest={() => false}
         onResponderGrant={({ nativeEvent: { pageX } }) => {
           dragState.current = pageX;
-          animatedLeft.setOffset(menuWidth - pageX);
+          animatedLeft.setOffset(-pageX);
         }}
         onResponderMove={({ nativeEvent: { pageX } }) =>
-          animatedLeft.setValue(pageX > dragState.current ? dragState.current - menuWidth : pageX - menuWidth)
+          animatedLeft.setValue(
+            pageX > (isOpen ? 0 : -closedPosition) + dragState.current
+              ? dragState.current // 0
+              : pageX < Math.abs((isOpen ? -closedPosition : 0) - dragState.current)
+              ? dragState.current + closedPosition // closed
+              : pageX + (isOpen ? 0 : closedPosition)
+          )
         }
         onResponderRelease={({ nativeEvent: { pageX } }) => {
-          if (dragState.current - pageX > dragActionLength) {
+          if (Math.abs(dragState.current - pageX) > dragActionLength) {
             animatedLeft.flattenOffset();
-            onChange(false);
+            if (dragState.current > pageX && isOpen) onChange(false);
+            else if (dragState.current < pageX && !isOpen) onChange(true);
           } else {
             animatedLeft.flattenOffset();
             Animated.timing(animatedLeft, {
-              toValue: 0,
+              toValue: isOpen ? 0 : closedPosition,
               duration: animationDuration,
               easing: Easing.in(animationFunc),
             }).start();
@@ -75,8 +85,11 @@ export default ({
             styles.backdrop,
             {
               backgroundColor: backdropColor,
-              opacity: animatedLeft.interpolate({ inputRange: [-menuWidth, 0], outputRange: [0, backdropOpacity] }),
-              zIndex: animatedLeft.interpolate({ inputRange: [-menuWidth, -menuWidth + 1, -menuWidth + 2], outputRange: [-1, 1, 1] }),
+              opacity: animatedLeft.interpolate({ inputRange: [closedPosition, 0], outputRange: [0, backdropOpacity] }),
+              zIndex: animatedLeft.interpolate({
+                inputRange: [closedPosition, closedPosition + 1, closedPosition + 2],
+                outputRange: [-1, 1, 1],
+              }),
             },
           ]}
         />
@@ -88,7 +101,13 @@ export default ({
           animatedLeft.setOffset(-pageX);
         }}
         onResponderMove={({ nativeEvent: { pageX } }) =>
-          animatedLeft.setValue(pageX > menuWidth + dragState.current ? dragState.current : pageX - menuWidth)
+          animatedLeft.setValue(
+            pageX > -closedPosition + dragState.current
+              ? dragState.current - extendLength
+              : pageX < dragState.current
+              ? dragState.current + closedPosition
+              : pageX + closedPosition
+          )
         }
         onResponderRelease={({ nativeEvent: { pageX } }) => {
           if (pageX - dragState.current > dragActionLength) {
@@ -97,7 +116,7 @@ export default ({
           } else {
             animatedLeft.flattenOffset();
             Animated.timing(animatedLeft, {
-              toValue: -menuWidth,
+              toValue: closedPosition,
               duration: animationDuration,
               easing: Easing.in(animationFunc),
             }).start();
