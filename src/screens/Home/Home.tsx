@@ -74,7 +74,8 @@ const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, upd
           />
         }
         isOpen={isSideMenuOpen}
-        onChange={value => setIsSideMenuOpen(value)}>
+        onChange={value => setIsSideMenuOpen(value)}
+        anchorWidth={16}>
         <View style={styles.container}>
           {heroesLoaded ? (
             <TabView

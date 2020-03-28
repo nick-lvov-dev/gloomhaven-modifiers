@@ -6,3 +6,5 @@ export const check = require('./check.png');
 export const menu = require('./menu.png');
 export const trash = require('./trash.png');
 export const advantageDisadvantage = require('./advantageDisadvantage.png');
+export const effectShadow = require('./effectShadow.png');
+export const roundShadow = require('./roundShadow.png');

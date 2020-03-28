@@ -13,6 +13,7 @@ const StandardModifiers: {
   NoDamage: Modifier;
   Curse: Modifier;
   Bless: Modifier;
+  ExtraNOne: Modifier;
 } = {
   Zero: { id: nameof<typeof baseModifiers>('zero'), image: baseModifiers.zero, attack: 0 },
   One: { id: nameof<typeof baseModifiers>('one'), image: baseModifiers.one, attack: 1 },
@@ -23,6 +24,7 @@ const StandardModifiers: {
   NoDamage: { id: nameof<typeof baseModifiers>('noDmg'), image: baseModifiers.noDmg, shuffle: true, effects: [ModifierEffect.NoAttack] },
   Curse: { id: nameof<typeof baseModifiers>('curse'), image: baseModifiers.curse, effects: [ModifierEffect.NoAttack] },
   Bless: { id: nameof<typeof baseModifiers>('bless'), image: baseModifiers.bless, effects: [ModifierEffect.Double] },
+  ExtraNOne: { id: nameof<typeof baseModifiers>('extraNOne'), image: baseModifiers.extraNOne, attack: -1 },
 };
 
 export default StandardModifiers;

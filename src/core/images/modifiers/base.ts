@@ -7,3 +7,4 @@ export const double = require('../../../../assets/images/modifiers/base/double.p
 export const noDmg = require('../../../../assets/images/modifiers/base/null.png');
 export const curse = require('../../../../assets/images/modifiers/base/curse.png');
 export const bless = require('../../../../assets/images/modifiers/base/bless.png');
+export const extraNOne = require('../../../../assets/images/modifiers/base/extraNOne.png');
