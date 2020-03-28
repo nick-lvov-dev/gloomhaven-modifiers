@@ -20,6 +20,8 @@ import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
 import { addHero, updateHero } from 'src/store/heroes/heroes';
 import HeroEditUpgrade from './components/HeroEditUpgrade/HeroEditUpgrade';
 import { mapModifierIdsToModifiers } from 'src/store/heroes/models/helpers/mapModifierIdsToModifiers.helper';
+import { activeOpacity } from 'src/core/contstants';
+import ClassSelect from './components/ClassSelect/ClassSelect';
 
 const screenName = nameof<RootStackParamsList>('HeroEdit');
 
@@ -56,6 +58,7 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
   const [heroClass, setHeroClass] = useState(classes.find(x => x.name === heroVm?.heroClass) ?? availableClasses[0]);
   const [upgrades, setUpgrades] = useState<ClassUpgrade[]>(heroVm?.upgrades ?? []);
   const [activeSections, setActiveSections] = useState<number[]>([]);
+  const [isClassSelectOpen, setIsClassSelectOpen] = useState(false);
   useEffect(() => {
     if (!isEdit || heroVm!.heroClass !== heroClass.name) setUpgrades([]);
   }, [heroClass]);
@@ -76,28 +79,27 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
   return (
     <>
       <Loader active={isLoading} />
+      <ClassSelect
+        isVisible={isClassSelectOpen}
+        onBackdropPress={() => setIsClassSelectOpen(false)}
+        onBackButtonPress={() => setIsClassSelectOpen(false)}
+        onSelect={heroClass => {
+          setHeroClass(heroClass);
+          setIsClassSelectOpen(false);
+        }}
+      />
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scroll}>
           <View>
-            <TextFormField label="Name" value={name} onChange={setName} />
-            <SelectFormField
-              label="Class"
-              value={heroClass}
-              onChange={setHeroClass}
-              items={availableClasses}
-              renderItem={item => (
-                <View key={item.id} style={styles.heroItem}>
-                  <Text style={styles.heroItemText}>{item.name}</Text>
-                  <Image style={styles.heroIcon} source={item.icon} />
-                </View>
-              )}
-              renderValue={item => (
-                <View key={item.id} style={styles.heroValue}>
-                  <Text style={styles.heroValueText}>{item.name}</Text>
-                  <Image style={styles.heroIcon} source={item.icon} />
-                </View>
-              )}
-            />
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+              <TextFormField style={{ flex: 1 }} label="Name" value={name} onChange={setName} />
+              <TouchableOpacity
+                activeOpacity={activeOpacity}
+                disabled={availableClasses.length < 2}
+                onPress={() => setIsClassSelectOpen(true)}>
+                <Image style={styles.heroIcon} source={heroClass.icon} />
+              </TouchableOpacity>
+            </View>
             <Accordion
               touchableComponent={TouchableOpacity}
               activeSections={activeSections}
