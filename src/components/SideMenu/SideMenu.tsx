@@ -43,7 +43,7 @@ export default ({
   }, [isOpen]);
 
   return (
-    <View style={[styles.container, { paddingLeft: extendLength / 2 }]}>
+    <View style={[styles.container, { paddingLeft: extendLength }]}>
       <Animated.View
         style={[styles.menu, { width: menuWidth, left: animatedLeft, zIndex: 2 }]}
         onStartShouldSetResponder={() => true}

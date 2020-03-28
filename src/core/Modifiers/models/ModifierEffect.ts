@@ -15,4 +15,6 @@ export enum ModifierEffect {
   Earth = 'Earth',
   Light = 'Light',
   Dark = 'Dark',
+  Curse = 'Curse',
+  Bless = 'Bless',
 }

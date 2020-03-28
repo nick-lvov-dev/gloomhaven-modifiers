@@ -101,6 +101,10 @@ export class Hero {
     return this._currentModifiers.filter(x => x.id === StandardModifiers.Bless.id).length;
   }
 
+  get extraMinusOneTotal() {
+    return this._currentModifiers.filter(x => x.id === StandardModifiers.ExtraNOne.id).length;
+  }
+
   draw = () => {
     this._shuffleCheck();
     this._draw();
@@ -138,6 +142,11 @@ export class Hero {
 
   addBless = () => {
     this._currentModifiers.push(StandardModifiers.Bless);
+    this.shuffle();
+  };
+
+  addMinusOne = () => {
+    this._currentModifiers.push(StandardModifiers.ExtraNOne);
     this.shuffle();
   };
 

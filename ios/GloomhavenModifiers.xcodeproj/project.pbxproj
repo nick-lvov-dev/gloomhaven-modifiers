@@ -16,6 +16,11 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* GloomhavenModifiersTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* GloomhavenModifiersTests.m */; };
+		2C7FC938C8CB42A888BB0731 /* Helvetica-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18F77605F55B4CFFB8A9D567 /* Helvetica-Regular.ttf */; };
+		A03E526D92A848BB966B6AAF /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E7F8558CB47E4DB4ADFDB760 /* OpenSans-Bold.ttf */; };
+		225061D46F044A00879D6ACA /* OpenSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DD8587D3784B44D0895882FC /* OpenSans-Regular.ttf */; };
+		9E02F9C1715741E7971A0717 /* OpenSans-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23896B85ACE549EFA6BF4126 /* OpenSans-SemiBold.ttf */; };
+		2F865183C37D4A43872A315C /* PirataOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F288FE51718B471AA9CD7D7D /* PirataOne-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +56,11 @@
 		2D02E4901E0B4A5D006451C7 /* GloomhavenModifiers-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "GloomhavenModifiers-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		18F77605F55B4CFFB8A9D567 /* Helvetica-Regular.ttf */ = {isa = PBXFileReference; name = "Helvetica-Regular.ttf"; path = "../assets/fonts/Helvetica-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		E7F8558CB47E4DB4ADFDB760 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; name = "OpenSans-Bold.ttf"; path = "../assets/fonts/OpenSans-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		DD8587D3784B44D0895882FC /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; name = "OpenSans-Regular.ttf"; path = "../assets/fonts/OpenSans-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		23896B85ACE549EFA6BF4126 /* OpenSans-SemiBold.ttf */ = {isa = PBXFileReference; name = "OpenSans-SemiBold.ttf"; path = "../assets/fonts/OpenSans-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F288FE51718B471AA9CD7D7D /* PirataOne-Regular.ttf */ = {isa = PBXFileReference; name = "PirataOne-Regular.ttf"; path = "../assets/fonts/PirataOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +150,7 @@
 				00E356EF1AD99517003FC87E /* GloomhavenModifiersTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				BA450F1B876841FEB5F08CE9 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -156,6 +167,19 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		BA450F1B876841FEB5F08CE9 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				18F77605F55B4CFFB8A9D567 /* Helvetica-Regular.ttf */,
+				E7F8558CB47E4DB4ADFDB760 /* OpenSans-Bold.ttf */,
+				DD8587D3784B44D0895882FC /* OpenSans-Regular.ttf */,
+				23896B85ACE549EFA6BF4126 /* OpenSans-SemiBold.ttf */,
+				F288FE51718B471AA9CD7D7D /* PirataOne-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -240,7 +264,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 940;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -293,6 +317,11 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				2C7FC938C8CB42A888BB0731 /* Helvetica-Regular.ttf in Resources */,
+				A03E526D92A848BB966B6AAF /* OpenSans-Bold.ttf in Resources */,
+				225061D46F044A00879D6ACA /* OpenSans-Regular.ttf in Resources */,
+				9E02F9C1715741E7971A0717 /* OpenSans-SemiBold.ttf in Resources */,
+				2F865183C37D4A43872A315C /* PirataOne-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

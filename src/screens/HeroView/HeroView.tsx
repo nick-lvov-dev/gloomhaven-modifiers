@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { reload, trash, advantageDisadvantage } from 'assets/images';
+import { reload, trash, advantageDisadvantage, effectShadow, roundShadow } from 'assets/images';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
@@ -14,6 +14,7 @@ import { removeHero } from 'src/store/heroes/heroes';
 import { activeOpacity } from 'src/core/contstants';
 import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
 import DrawTwo from './components/DrawTwo/DrawTwo';
+import statusIcons from 'src/core/images/statusIcons';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -80,6 +81,11 @@ class HeroView extends Component<Props, State> {
     this.setState({ heroModel: new HeroVm(hero) });
   };
 
+  onAddMinusOne = (hero: Hero) => {
+    hero.addMinusOne();
+    this.setState({ heroModel: new HeroVm(hero) });
+  };
+
   onDrawTwo = () => this.setState({ isDrawTwo: true });
 
   onDrawTwoClose = (hero: Hero) => this.setState({ isDrawTwo: false, heroModel: new HeroVm(hero) });
@@ -94,15 +100,36 @@ class HeroView extends Component<Props, State> {
       <>
         <DrawTwo hero={this.state.heroModel} visible={this.state.isDrawTwo} onClose={this.onDrawTwoClose} />
         <View style={styles.container}>
+          <View style={styles.modifiers}>
+            <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddBless(hero)} style={styles.modifier}>
+              <Image source={statusIcons.Bless} style={styles.modifierAction} />
+              <Image source={effectShadow} style={styles.actionShadow} />
+              <Text style={styles.modifierActionText}>{hero.blessesTotal}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddCurse(hero)} style={styles.modifier}>
+              <Image source={statusIcons.Curse} style={styles.modifierAction} />
+              <Image source={effectShadow} style={styles.actionShadow} />
+              <Text style={styles.modifierActionText}>{hero.cursesTotal}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={activeOpacity}
+              onPress={() => this.onAddMinusOne(hero)}
+              style={styles.modifier}>
+              <Image source={statusIcons.MinusOne} style={styles.modifierAction} />
+              <Image source={roundShadow} style={styles.actionShadow} />
+              <Text style={styles.modifierActionText}>{hero.extraMinusOneTotal}</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.actions}>
             <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo} style={styles.action}>
               <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.shuffleWrapper, styles.action]}
+              style={[styles.action, styles.shuffleWrapper]}
               onPress={() => this.onShuffle(hero)}
               activeOpacity={activeOpacity}>
               <Image source={reload} style={styles.shuffle} />
+              <Image source={roundShadow} style={styles.actionShadow} />
             </TouchableOpacity>
             {!this.isMonster && (
               <TouchableOpacity activeOpacity={activeOpacity} onPress={this.delete} style={styles.action}>
@@ -116,16 +143,6 @@ class HeroView extends Component<Props, State> {
           <Text style={styles.total}>{total}</Text>
           <View style={styles.deckContainer}>
             <Deck hero={hero} onDraw={this.onDraw} />
-          </View>
-          <View style={styles.blessCurseContainer}>
-            <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddBless(hero)}>
-              <Image source={bless} style={styles.blessCurseImage} />
-              <Text style={styles.blessCurseCount}>{hero.blessesTotal}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.blessCurseWrapper} onPress={() => this.onAddCurse(hero)}>
-              <Image source={curse} style={styles.blessCurseImage} />
-              <Text style={styles.blessCurseCount}>{hero.cursesTotal}</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </>
