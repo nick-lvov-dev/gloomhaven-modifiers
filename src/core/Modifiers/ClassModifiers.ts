@@ -5,7 +5,7 @@ import ScoundrelModifiers from './ScoundrelModifiers';
 import MonsterModifiers from './MonsterModifiers';
 import TyrantModifiers from './TyrantModifiers';
 
-const ClassModifiers: { [key in keyof typeof HeroClass]: { [key: string]: Modifier } } = {
+const ClassModifiers: { [key in HeroClass]: { [key: string]: Modifier } } = {
   Tinkerer: TinkererModifiers,
   Scoundrel: ScoundrelModifiers,
   Monsters: MonsterModifiers,

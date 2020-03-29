@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
 import Loader from '../../components/Loader/Loader';
 import { connect } from 'react-redux';
 import { loadHeroes, addHero, removeHero, updateHero } from 'src/store/heroes/heroes';
 import { RootState } from 'src/store/store';
-import { HeroClass } from 'src/core/HeroClass';
+import { HeroClass, classes } from 'src/core/HeroClass';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Monsters } from 'src/common/Monsters';
 import { TabView, TabBar } from 'react-native-tab-view';
@@ -23,7 +23,7 @@ interface StateProps {
 
 interface DispatchProps {
   loadHeroesData: () => void;
-  remove: (hero: string) => void;
+  remove: (heroClass: HeroClass) => void;
   add: (hero: HeroVm) => void;
   update: (hero: HeroVm) => void;
 }
@@ -35,25 +35,27 @@ interface OwnProps {
 type Props = OwnProps & StateProps & DispatchProps;
 
 interface TabRoute {
-  key: keyof typeof HeroClass;
+  key: HeroClass;
   title: string;
 }
 
-const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
+const Home = ({ isLoading, heroes, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const routes: TabRoute[] = useMemo(() => heroVms.map(({ heroClass, name }) => ({ key: heroClass, title: name })), [heroVms.length]);
-  const refs = (Object.keys(HeroClass) as Array<keyof typeof HeroClass>).reduce((acc, val) => ({ ...acc, [val]: useRef(null) }), {});
+  const routes: TabRoute[] = useMemo(() => heroes.map(({ heroClass }) => ({ key: heroClass, title: heroClass })), [heroes.length]);
+  const refs = (Object.keys(HeroClass) as Array<HeroClass>).reduce((acc, val) => ({ ...acc, [val]: useRef(null) }), {});
   const renderScene = ({ route: { key } }: { route: TabRoute }) => {
-    return <HeroView heroName={heroVms.find(hero => hero.heroClass === key)!.name} ref={refs[key]} />;
+    return <HeroView heroClass={key} ref={refs[key]} />;
   };
-  const blurUpdate = useCallback(() => update(refs[routes[index].key].current?.state?.heroModel), [update, refs, routes, index]);
+  const blurUpdate = useCallback(() => {
+    if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
+  }, [update, refs, routes, index]);
 
   useEffect(() => {
     loadHeroesData();
   }, [loadHeroesData]);
   useEffect(() => {
-    if (heroesLoaded && !heroVms.some(x => x.heroClass === HeroClass.Monsters)) {
+    if (heroesLoaded && !heroes.some(x => x.heroClass === HeroClass.Monsters)) {
       add(new HeroVm(Monsters));
     }
   }, [heroesLoaded]);
@@ -67,13 +69,13 @@ const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, upd
       <SideMenu
         menu={
           <HomeSideMenu
-            heroes={heroVms}
+            heroes={heroes}
             onAddHero={() => {
               navigation.navigate('HeroEdit');
               setIsSideMenuOpen(false);
             }}
             onHeroPress={hero => {
-              navigation.navigate('HeroEdit', { hero: hero.name });
+              navigation.navigate('HeroEdit', { hero: hero.heroClass });
               setIsSideMenuOpen(false);
             }}
           />
@@ -91,8 +93,21 @@ const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, upd
                 setIndex(i);
               }}
               sceneContainerStyle={styles.sceneContainer}
-              renderTabBar={props => <TabBar {...props} style={styles.tabBar} indicatorStyle={styles.tabIndicator} />}
-              lazy
+              renderTabBar={props => (
+                <TabBar
+                  {...props}
+                  style={styles.tabBar}
+                  indicatorStyle={styles.tabIndicator}
+                  renderIcon={({ route }) => (
+                    <Image
+                      source={classes.find(c => c.name === heroes.find(x => x.heroClass === route.key)!.heroClass)!.icon}
+                      style={{ width: 32, height: 32, resizeMode: 'contain', tintColor: '#fff' }}
+                    />
+                  )}
+                  getLabelText={() => undefined}
+                  labelStyle={{ fontSize: 12, textTransform: 'uppercase', textAlign: 'center' }}
+                />
+              )}
             />
           ) : null}
         </View>

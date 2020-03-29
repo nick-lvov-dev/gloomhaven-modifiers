@@ -17,8 +17,8 @@ export default ({ heroes, onAddHero, onHeroPress }: Props) => (
     {heroes
       .filter(hero => hero.heroClass !== HeroClass.Monsters)
       .map(hero => (
-        <TouchableOpacity key={`home_side_menu_hero_${hero.name}`} activeOpacity={0.7} onPress={() => onHeroPress(hero)}>
-          <Text style={styles.hero}>{hero.name}</Text>
+        <TouchableOpacity key={`home_side_menu_hero_${hero.heroClass}`} activeOpacity={0.7} onPress={() => onHeroPress(hero)}>
+          <Text style={styles.hero}>{hero.heroClass}</Text>
         </TouchableOpacity>
       ))}
     {heroes.length < Math.min(classes.length, 5) ? (

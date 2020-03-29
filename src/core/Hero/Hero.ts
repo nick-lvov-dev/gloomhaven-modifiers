@@ -25,12 +25,7 @@ export class Hero {
   private _drawn: Modifier[] = [];
   private _upgrades: ClassUpgrade[] = [];
 
-  constructor(
-    public readonly heroClass: keyof typeof HeroClass,
-    public readonly name: string,
-    defaultModifiers: Modifier[] = [],
-    options?: HeroOptions
-  ) {
+  constructor(public readonly heroClass: HeroClass, defaultModifiers: Modifier[] = [], options?: HeroOptions) {
     this._defaultModifiers = cloneDeep(defaultModifiers);
     this._currentModifiers = cloneDeep(this._defaultModifiers);
     this._remainingModifiers = cloneDeep(this._defaultModifiers);

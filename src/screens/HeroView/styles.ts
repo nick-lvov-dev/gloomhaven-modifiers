@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 import { FontFamily } from 'src/core/FontFamily';
-import { width } from 'src/core/Dimensions';
 import { colors } from 'src/core/colors';
 
 export default StyleSheet.create({
@@ -12,7 +11,6 @@ export default StyleSheet.create({
     backgroundColor: colors.background,
   },
   delete: { height: 24, width: 24, resizeMode: 'contain', tintColor: colors.dark },
-  remaining: { fontFamily: FontFamily.SemiBold, fontSize: 14, textAlign: 'center', marginBottom: 24 },
   shuffleWrapper: { backgroundColor: colors.dark, padding: 8, paddingLeft: 9, paddingRight: 7, borderRadius: 20 },
   actions: { position: 'absolute', right: 0, top: 0, padding: 16, alignItems: 'center' },
   modifiers: { position: 'absolute', left: 0, top: 0, padding: 16, alignItems: 'center' },

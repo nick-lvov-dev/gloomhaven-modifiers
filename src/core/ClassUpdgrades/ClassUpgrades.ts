@@ -4,7 +4,7 @@ import TinkererUpdgrades from './TinkererUpgrades';
 import ScoundrelUpgrades from './ScoundrelUpgrades';
 import TyrantUpdgrades from './TyrantUpgrades';
 
-const ClassUpgrades: { [key in keyof typeof HeroClass]: { [key: string]: ClassUpgrade } } = {
+const ClassUpgrades: { [key in HeroClass]: { [key: string]: ClassUpgrade } } = {
   Tinkerer: TinkererUpdgrades,
   Scoundrel: ScoundrelUpgrades,
   Tyrant: TyrantUpdgrades,

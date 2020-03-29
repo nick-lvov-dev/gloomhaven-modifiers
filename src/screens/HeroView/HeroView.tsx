@@ -9,7 +9,6 @@ import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
 import Deck from './components/Deck/Deck';
 import { isEqual } from 'lodash';
-import { bless, curse } from 'src/core/images/modifiers/base';
 import { removeHero } from 'src/store/heroes/heroes';
 import { activeOpacity } from 'src/core/contstants';
 import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
@@ -23,11 +22,11 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  delete: (heroName: string) => void;
+  delete: (heroClass: HeroClass) => void;
 }
 
 interface OwnProps {
-  heroName: string;
+  heroClass: HeroClass;
 }
 
 type Props = StateProps & OwnProps & DispatchProps;
@@ -39,13 +38,13 @@ interface State {
 
 class HeroView extends Component<Props, State> {
   state: State = {
-    heroModel: this.props.heroes.find(x => x.name === this.props.heroName)!,
+    heroModel: this.props.heroes.find(x => x.heroClass === this.props.heroClass)!,
     isDrawTwo: false,
   };
 
   componentDidUpdate({ heroes }: Props) {
     if (!isEqual(heroes, this.props.heroes)) {
-      this.setState({ heroModel: this.props.heroes.find(x => x.name === this.props.heroName)! });
+      this.setState({ heroModel: this.props.heroes.find(x => x.heroClass === this.props.heroClass)! });
     }
   }
   get isMonster() {
@@ -90,7 +89,7 @@ class HeroView extends Component<Props, State> {
 
   onDrawTwoClose = (hero: Hero) => this.setState({ isDrawTwo: false, heroModel: new HeroVm(hero) });
 
-  delete = () => this.props.delete(this.props.heroName);
+  delete = () => this.props.delete(this.props.heroClass);
 
   render() {
     const hero = this.hero;
@@ -111,10 +110,7 @@ class HeroView extends Component<Props, State> {
               <Image source={effectShadow} style={styles.actionShadow} />
               <Text style={styles.modifierActionText}>{hero.cursesTotal}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={activeOpacity}
-              onPress={() => this.onAddMinusOne(hero)}
-              style={styles.modifier}>
+            <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddMinusOne(hero)} style={styles.modifier}>
               <Image source={statusIcons.MinusOne} style={styles.modifierAction} />
               <Image source={roundShadow} style={styles.actionShadow} />
               <Text style={styles.modifierActionText}>{hero.extraMinusOneTotal}</Text>
@@ -136,9 +132,6 @@ class HeroView extends Component<Props, State> {
                 <Image source={trash} style={styles.delete} />
               </TouchableOpacity>
             )}
-          </View>
-          <View>
-            <Text style={styles.remaining}>Remaining: {hero.remainingModifiers.length}</Text>
           </View>
           <Text style={styles.total}>{total}</Text>
           <View style={styles.deckContainer}>
