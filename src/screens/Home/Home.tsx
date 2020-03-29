@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
@@ -47,15 +47,20 @@ const Home = ({ isLoading, heroes: heroVms, navigation, loadHeroesData, add, upd
   const renderScene = ({ route: { key } }: { route: TabRoute }) => {
     return <HeroView heroName={heroVms.find(hero => hero.heroClass === key)!.name} ref={refs[key]} />;
   };
+  const blurUpdate = useCallback(() => update(refs[routes[index].key].current?.state?.heroModel), [update, refs, routes, index]);
 
   useEffect(() => {
     loadHeroesData();
-  }, []);
+  }, [loadHeroesData]);
   useEffect(() => {
     if (heroesLoaded && !heroVms.some(x => x.heroClass === HeroClass.Monsters)) {
       add(new HeroVm(Monsters));
     }
   }, [heroesLoaded]);
+  useEffect(() => {
+    const sub = navigation.addListener('blur', blurUpdate);
+    return sub;
+  }, [blurUpdate]);
   return (
     <>
       <Loader active={isLoading} />
