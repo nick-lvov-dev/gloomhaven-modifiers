@@ -1,6 +1,5 @@
 import { Hero } from 'src/core/Hero/Hero';
-import { nameof } from './helpers/nameof.helper';
-import { HeroClass } from 'src/core/HeroClass';
 import MonsterModifierDeck from 'src/core/ModifierDecks/MonsterModifierDeck';
+import { HeroClass } from 'src/core/HeroClass';
 
-export const Monsters = new Hero(nameof<typeof HeroClass>('Monsters'), nameof<typeof HeroClass>('Monsters'), MonsterModifierDeck);
+export const Monsters = new Hero(HeroClass.Monsters, MonsterModifierDeck);

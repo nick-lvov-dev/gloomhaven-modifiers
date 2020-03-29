@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { HeroVm } from './models/HeroVm';
 import { cloneDeep } from 'lodash';
 import StandardModifiers from 'src/core/Modifiers/StandardModifiers';
+import { HeroClass } from 'src/core/HeroClass';
 
 const HEROES_STORAGE_KEY = 'HEROES_STORAGE_KEY';
 
@@ -25,16 +26,10 @@ const initialState: HeroesState = {
 };
 
 const getHeroCurseCount = (heroes: HeroVm[]) =>
-  heroes.reduce(
-    (total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.Curse.id).length,
-    0
-  );
+  heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.Curse.id).length, 0);
 
 const getBlessCount = (heroes: HeroVm[]) =>
-  heroes.reduce(
-    (total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.Bless.id).length,
-    0
-  );
+  heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.Bless.id).length, 0);
 
 const slice = createSlice({
   name: 'heroes',
@@ -72,7 +67,7 @@ export const loadHeroes = () => async (dispatch: Dispatch) => {
 export const addHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
   const heroes = getState().heroes.heroes;
-  if (heroes.some(x => x.name === hero.name)) {
+  if (heroes.some(x => x.heroClass === hero.heroClass)) {
     dispatch(setLoading(false));
     return;
   }
@@ -83,15 +78,15 @@ export const addHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: ()
 
 export const updateHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
-  const heroes = getState().heroes.heroes.map(x => (x.name === hero.name ? cloneDeep(hero) : x));
+  const heroes = getState().heroes.heroes.map(x => (x.heroClass === hero.heroClass ? cloneDeep(hero) : x));
   await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
   dispatch(setHeroes(heroes));
   dispatch(setLoading(false));
 };
 
-export const removeHero = (heroName: string) => async (dispatch: Dispatch, getState: () => RootState) => {
+export const removeHero = (heroClass: HeroClass) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
-  const heroes = getState().heroes.heroes.filter(x => x.name !== heroName);
+  const heroes = getState().heroes.heroes.filter(x => x.heroClass !== heroClass);
   await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
   dispatch(setHeroes(heroes));
   dispatch(setLoading(false));

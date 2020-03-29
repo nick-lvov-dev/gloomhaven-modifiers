@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import { FontFamily } from 'src/core/FontFamily';
 import { colors } from 'src/core/colors';
 
-const heroIconDimension = 32;
+const heroIconDimension = 56;
 
 export default StyleSheet.create({
   container: {
@@ -11,12 +11,13 @@ export default StyleSheet.create({
     alignItems: 'stretch',
   },
   scroll: { padding: 32, flexGrow: 1, justifyContent: 'space-between' },
+  topContentWrapper: { alignItems: 'center' },
+  heroIconWrapper: { padding: 16, backgroundColor: colors.dark, borderRadius: 100, marginBottom: 24 },
   heroIcon: {
     width: heroIconDimension,
     height: heroIconDimension,
     resizeMode: 'contain',
-    marginLeft: 24,
-    marginBottom: 14,
+    tintColor: '#fff',
   },
   upgrades: { textAlign: 'center', fontSize: 16, fontFamily: FontFamily.SemiBold, paddingVertical: 16 },
   button: {

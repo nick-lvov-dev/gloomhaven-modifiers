@@ -2,8 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import styles from './styles';
 import { classes, HeroClass } from 'src/core/HeroClass';
-import TextFormField from '../../components/FormField/TextFormField';
-import SelectFormField from '../../components/FormField/SelectFormField';
 import Loader from '../../components/Loader/Loader';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
@@ -17,7 +15,7 @@ import { nameof } from 'src/common/helpers/nameof.helper';
 import Accordion from 'react-native-collapsible/Accordion';
 import ClassUpgrades from 'src/core/ClassUpdgrades/ClassUpgrades';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
-import { addHero, updateHero } from 'src/store/heroes/heroes';
+import { addHero, removeHero } from 'src/store/heroes/heroes';
 import HeroEditUpgrade from './components/HeroEditUpgrade/HeroEditUpgrade';
 import { mapModifierIdsToModifiers } from 'src/store/heroes/models/helpers/mapModifierIdsToModifiers.helper';
 import { activeOpacity } from 'src/core/contstants';
@@ -32,7 +30,7 @@ interface StateProps {
 
 interface DispatchProps {
   add: (hero: HeroVm) => void;
-  edit: (hero: HeroVm) => void;
+  remove: (heroClass: HeroClass) => void;
 }
 
 interface OwnProps {
@@ -42,8 +40,8 @@ interface OwnProps {
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => {
-  let heroVm = heroes.find(x => route.params?.hero === x.name);
+const AddHero = ({ navigation, isLoading, add, remove, heroes, route }: Props) => {
+  let heroVm = heroes.find(x => route.params?.hero === x.heroClass)!;
   const availableClasses = useMemo(
     () =>
       classes.filter(
@@ -54,7 +52,6 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
     [heroes]
   );
   const isEdit = !!heroVm;
-  const [name, setName] = useState(heroVm?.name ?? '');
   const [heroClass, setHeroClass] = useState(classes.find(x => x.name === heroVm?.heroClass) ?? availableClasses[0]);
   const [upgrades, setUpgrades] = useState<ClassUpgrade[]>(heroVm?.upgrades ?? []);
   const [activeSections, setActiveSections] = useState<number[]>([]);
@@ -65,15 +62,16 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
   const onSubmit = () => {
     const hero = new Hero(
       heroClass.name,
-      name,
       isEdit ? mapModifierIdsToModifiers(heroClass.name, heroVm!.defaultModifiers) : StandardModifierDeck,
       {
         upgrades: isEdit ? heroVm!.upgrades : [],
       }
     );
     hero.updateUpgrades(upgrades);
-
-    isEdit ? edit(new HeroVm(hero)) : add(new HeroVm(hero));
+    if (isEdit) {
+      remove(heroVm.heroClass);
+    }
+    add(new HeroVm(hero));
     navigation.goBack();
   };
   return (
@@ -90,16 +88,14 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
       />
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <View>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-              <TextFormField style={{ flex: 1 }} label="Name" value={name} onChange={setName} />
-              <TouchableOpacity
-                activeOpacity={activeOpacity}
-                disabled={availableClasses.length < 2}
-                onPress={() => setIsClassSelectOpen(true)}>
-                <Image style={styles.heroIcon} source={heroClass.icon} />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.topContentWrapper}>
+            <TouchableOpacity
+              activeOpacity={activeOpacity}
+              disabled={availableClasses.length < 2}
+              onPress={() => setIsClassSelectOpen(true)}
+              style={styles.heroIconWrapper}>
+              <Image style={styles.heroIcon} source={heroClass.icon} />
+            </TouchableOpacity>
             <Accordion
               touchableComponent={TouchableOpacity}
               activeSections={activeSections}
@@ -143,5 +139,5 @@ const AddHero = ({ navigation, isLoading, add, edit, heroes, route }: Props) => 
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(state => ({ ...state.heroes }), {
   add: addHero,
-  edit: updateHero,
+  remove: removeHero,
 })(AddHero);
