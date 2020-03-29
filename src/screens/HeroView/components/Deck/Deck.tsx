@@ -141,7 +141,7 @@ export default ({ hero, onDraw }: Props) => {
         const currentCardTopOffset = getCurrentCardTopOffset(pageY);
 
         // drag hasn't started, treat as press
-        if (!isMoving || currentCardTopOffset < effectiveDragLength) {
+        if (!isDragging && currentCardTopOffset < effectiveDragLength) {
           resetOffsets();
           if (!isDragging) {
             // if withing card border, trigger draw
@@ -193,9 +193,8 @@ export default ({ hero, onDraw }: Props) => {
           }
           return;
         }
-
         // drag ended on a card, reset position
-        if (isDragging && currentCardTopOffset < modifierStyle.height) {
+        if (isDragging && currentCardTopOffset - currentDragOffset.current < modifierStyle.height) {
           Animated.timing(animatedCardTop, {
             toValue: initialOffset,
             duration: animationDuration,
