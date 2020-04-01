@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction, Dispatch } from '@reduxjs/toolkit';
-import { produce } from 'immer';
 import { RootState } from '../store';
 import AsyncStorage from '@react-native-community/async-storage';
 import { HeroVm } from './models/HeroVm';
@@ -45,10 +44,7 @@ const slice = createSlice({
         heroCurseCount: getHeroCurseCount(heroes),
       };
     },
-    setLoading: (state, action: PayloadAction<boolean>) =>
-      produce(state, draft => {
-        draft.isLoading = action.payload;
-      }),
+    setLoading: (state, action: PayloadAction<boolean>) => ({ ...state, isLoading: action.payload }),
   },
 });
 
@@ -58,10 +54,14 @@ const { setHeroes, setLoading } = HeroesActions;
 export const loadHeroes = () => async (dispatch: Dispatch) => {
   // await AsyncStorage.removeItem(HEROES_STORAGE_KEY);
   dispatch(setLoading(true));
-  const heroesJson = await AsyncStorage.getItem(HEROES_STORAGE_KEY);
-  const heroes = heroesJson ? (JSON.parse(heroesJson) as HeroVm[]) : [];
-  dispatch(setHeroes(heroes));
-  dispatch(setLoading(false));
+  try {
+    const heroesJson = await AsyncStorage.getItem(HEROES_STORAGE_KEY);
+    const heroes = heroesJson ? (JSON.parse(heroesJson) as HeroVm[]) : [];
+    dispatch(setHeroes(heroes));
+    dispatch(setLoading(false));
+  } catch (e) {
+    dispatch(setLoading(false));
+  }
 };
 
 export const addHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: () => RootState) => {
@@ -71,23 +71,35 @@ export const addHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: ()
     dispatch(setLoading(false));
     return;
   }
-  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([hero])));
-  dispatch(setHeroes(heroes.concat([cloneDeep(hero)])));
-  dispatch(setLoading(false));
+  try {
+    await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([hero])));
+    dispatch(setHeroes(heroes.concat([cloneDeep(hero)])));
+    dispatch(setLoading(false));
+  } catch (e) {
+    dispatch(setLoading(false));
+  }
 };
 
 export const updateHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
   const heroes = getState().heroes.heroes.map(x => (x.heroClass === hero.heroClass ? cloneDeep(hero) : x));
-  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
-  dispatch(setHeroes(heroes));
-  dispatch(setLoading(false));
+  try {
+    await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
+    dispatch(setHeroes(heroes));
+    dispatch(setLoading(false));
+  } catch (e) {
+    dispatch(setLoading(false));
+  }
 };
 
 export const removeHero = (heroClass: HeroClass) => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(setLoading(true));
   const heroes = getState().heroes.heroes.filter(x => x.heroClass !== heroClass);
-  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
-  dispatch(setHeroes(heroes));
-  dispatch(setLoading(false));
+  try {
+    await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
+    dispatch(setHeroes(heroes));
+    dispatch(setLoading(false));
+  } catch (e) {
+    dispatch(setLoading(false));
+  }
 };

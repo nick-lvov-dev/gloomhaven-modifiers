@@ -15,7 +15,7 @@ export default StyleSheet.create({
     color: '#fff',
     backgroundColor: colors.dark,
     textAlign: 'center',
-    height: 48,
+    minHeight: 56,
     textAlignVertical: 'center',
   },
   hero: { fontFamily: FontFamily.Regular, fontSize: 16, color: '#fff', paddingVertical: 16, textAlign: 'center' },
