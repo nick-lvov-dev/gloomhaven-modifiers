@@ -211,7 +211,7 @@ export class Hero {
     if (count)
       for (let i = 0; i < count; i++) {
         this._defaultModifiers.splice(
-          this._currentModifiers.findIndex(x => x.id === modifier.id),
+          this._defaultModifiers.findIndex(x => x.id === modifier.id),
           1
         );
       }
