@@ -19,6 +19,7 @@ export default StyleSheet.create({
     resizeMode: 'contain',
     tintColor: '#fff',
   },
+  upgradesWrapper: { alignSelf: 'stretch' },
   upgrades: { textAlign: 'center', fontSize: 16, fontFamily: FontFamily.SemiBold, paddingVertical: 16 },
   button: {
     fontFamily: FontFamily.Bold,

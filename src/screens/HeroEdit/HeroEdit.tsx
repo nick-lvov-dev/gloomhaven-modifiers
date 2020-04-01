@@ -15,7 +15,7 @@ import { nameof } from 'src/common/helpers/nameof.helper';
 import Accordion from 'react-native-collapsible/Accordion';
 import ClassUpgrades from 'src/core/ClassUpdgrades/ClassUpgrades';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
-import { addHero, removeHero } from 'src/store/heroes/heroes';
+import { addHero, updateHero } from 'src/store/heroes/heroes';
 import HeroEditUpgrade from './components/HeroEditUpgrade/HeroEditUpgrade';
 import { mapModifierIdsToModifiers } from 'src/store/heroes/models/helpers/mapModifierIdsToModifiers.helper';
 import { activeOpacity } from 'src/core/contstants';
@@ -30,7 +30,7 @@ interface StateProps {
 
 interface DispatchProps {
   add: (hero: HeroVm) => void;
-  remove: (heroClass: HeroClass) => void;
+  update: (hero: HeroVm) => void;
 }
 
 interface OwnProps {
@@ -40,7 +40,7 @@ interface OwnProps {
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-const AddHero = ({ navigation, isLoading, add, remove, heroes, route }: Props) => {
+const AddHero = ({ navigation, isLoading, add, update, heroes, route }: Props) => {
   let heroVm = heroes.find(x => route.params?.hero === x.heroClass)!;
   const availableClasses = useMemo(
     () =>
@@ -68,10 +68,8 @@ const AddHero = ({ navigation, isLoading, add, remove, heroes, route }: Props) =
       }
     );
     hero.updateUpgrades(upgrades);
-    if (isEdit) {
-      remove(heroVm.heroClass);
-    }
-    add(new HeroVm(hero));
+    if (isEdit) update(new HeroVm(hero));
+    else add(new HeroVm(hero));
     navigation.goBack();
   };
   return (
@@ -102,6 +100,7 @@ const AddHero = ({ navigation, isLoading, add, remove, heroes, route }: Props) =
               renderHeader={() => <Text style={styles.upgrades}>Upgrades</Text>}
               onChange={setActiveSections}
               sections={['Upgrades']}
+              containerStyle={styles.upgradesWrapper}
               renderContent={() => (
                 <>
                   {Object.keys(ClassUpgrades[heroClass.name]).map(key => (
@@ -139,5 +138,5 @@ const AddHero = ({ navigation, isLoading, add, remove, heroes, route }: Props) =
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(state => ({ ...state.heroes }), {
   add: addHero,
-  remove: removeHero,
+  update: updateHero,
 })(AddHero);
