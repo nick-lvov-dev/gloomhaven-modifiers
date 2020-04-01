@@ -8,3 +8,4 @@ export const trash = require('./trash.png');
 export const advantageDisadvantage = require('./advantageDisadvantage.png');
 export const effectShadow = require('./effectShadow.png');
 export const roundShadow = require('./roundShadow.png');
+export const edit = require('./edit.png');

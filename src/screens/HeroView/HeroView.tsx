@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { reload, trash, advantageDisadvantage, effectShadow, roundShadow } from 'assets/images';
+import { reload, trash, advantageDisadvantage, effectShadow, roundShadow, edit, plus } from 'assets/images';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
@@ -14,6 +14,8 @@ import { activeOpacity } from 'src/core/contstants';
 import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
 import DrawTwo from './components/DrawTwo/DrawTwo';
 import statusIcons from 'src/core/images/statusIcons';
+import HeroAction from './components/HeroAction/HeroAction';
+import { width } from 'src/core/Dimensions';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -27,6 +29,7 @@ interface DispatchProps {
 
 interface OwnProps {
   heroClass: HeroClass;
+  onEdit?: () => void;
 }
 
 type Props = StateProps & OwnProps & DispatchProps;
@@ -117,25 +120,31 @@ class HeroView extends Component<Props, State> {
             </TouchableOpacity>
           </View>
           <View style={styles.actions}>
-            <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo} style={styles.action}>
-              <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.action, styles.shuffleWrapper]}
-              onPress={() => this.onShuffle(hero)}
-              activeOpacity={activeOpacity}>
-              <Image source={reload} style={styles.shuffle} />
-              <Image source={roundShadow} style={styles.actionShadow} />
-            </TouchableOpacity>
             {!this.isMonster && (
-              <TouchableOpacity activeOpacity={activeOpacity} onPress={this.delete} style={styles.action}>
-                <Image source={trash} style={styles.delete} />
-              </TouchableOpacity>
+              <>
+                {this.props.onEdit && <HeroAction image={edit} onPress={this.props.onEdit} style={styles.action} />}
+                <HeroAction
+                  image={plus}
+                  onPress={this.delete}
+                  style={[styles.action, styles.heroAction, styles.deleteWrapper]}
+                  imageStyle={styles.delete}
+                />
+              </>
             )}
           </View>
           <Text style={styles.total}>{total}</Text>
           <View style={styles.deckContainer}>
+            <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo}>
+              <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
+            </TouchableOpacity>
             <Deck hero={hero} onDraw={this.onDraw} />
+            <HeroAction
+              image={reload}
+              onPress={() => this.onShuffle(hero)}
+              style={styles.shuffleWrapper}
+              imageStyle={{ width: 28, height: 28 }}
+              shadowStyle={{ width: 46, height: 46 }}
+            />
           </View>
         </View>
       </>

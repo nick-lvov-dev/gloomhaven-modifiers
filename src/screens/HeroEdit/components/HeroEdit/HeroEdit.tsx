@@ -2,26 +2,20 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import styles from './styles';
 import { classes, HeroClass } from 'src/core/HeroClass';
-import Loader from '../../components/Loader/Loader';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
+import Loader from '../../../../components/Loader/Loader';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
 import StandardModifierDeck from 'src/core/ModifierDecks/StandardModifierDeck';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
-import { RouteProp } from '@react-navigation/native';
-import { nameof } from 'src/common/helpers/nameof.helper';
 import Accordion from 'react-native-collapsible/Accordion';
 import ClassUpgrades from 'src/core/ClassUpdgrades/ClassUpgrades';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
 import { addHero, updateHero } from 'src/store/heroes/heroes';
-import HeroEditUpgrade from './components/HeroEditUpgrade/HeroEditUpgrade';
+import HeroEditUpgrade from '../HeroEditUpgrade/HeroEditUpgrade';
 import { mapModifierIdsToModifiers } from 'src/store/heroes/models/helpers/mapModifierIdsToModifiers.helper';
 import { activeOpacity } from 'src/core/contstants';
-import ClassSelect from './components/ClassSelect/ClassSelect';
-
-const screenName = nameof<RootStackParamsList>('HeroEdit');
+import ClassSelect from '../ClassSelect/ClassSelect';
 
 interface StateProps {
   isLoading: boolean;
@@ -34,14 +28,15 @@ interface DispatchProps {
 }
 
 interface OwnProps {
-  navigation: StackNavigationProp<RootStackParamsList, typeof screenName>;
-  route: RouteProp<RootStackParamsList, typeof screenName>;
+  heroClass?: HeroClass;
+  onSubmit: () => void;
+  onCancel?: () => void;
 }
 
 type Props = StateProps & OwnProps & DispatchProps;
 
-const AddHero = ({ navigation, isLoading, add, update, heroes, route }: Props) => {
-  let heroVm = heroes.find(x => route.params?.hero === x.heroClass)!;
+const HeroEdit = ({ isLoading, add, update, heroes, heroClass: hero, onSubmit, onCancel }: Props) => {
+  let heroVm = heroes.find(x => hero === x.heroClass)!;
   const availableClasses = useMemo(
     () =>
       classes.filter(
@@ -59,7 +54,7 @@ const AddHero = ({ navigation, isLoading, add, update, heroes, route }: Props) =
   useEffect(() => {
     if (!isEdit || heroVm!.heroClass !== heroClass.name) setUpgrades([]);
   }, [heroClass]);
-  const onSubmit = () => {
+  const submit = () => {
     const hero = new Hero(
       heroClass.name,
       isEdit ? mapModifierIdsToModifiers(heroClass.name, heroVm!.defaultModifiers) : StandardModifierDeck,
@@ -67,10 +62,13 @@ const AddHero = ({ navigation, isLoading, add, update, heroes, route }: Props) =
         upgrades: isEdit ? heroVm!.upgrades : [],
       }
     );
+
     hero.updateUpgrades(upgrades);
+
     if (isEdit) update(new HeroVm(hero));
     else add(new HeroVm(hero));
-    navigation.goBack();
+
+    onSubmit();
   };
   return (
     <>
@@ -123,12 +121,14 @@ const AddHero = ({ navigation, isLoading, add, update, heroes, route }: Props) =
             />
           </View>
           <View>
-            <TouchableOpacity onPress={onSubmit}>
+            <TouchableOpacity onPress={submit}>
               <Text style={styles.button}>{isEdit ? 'Edit' : 'Create'}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text style={styles.cancel}>Cancel</Text>
-            </TouchableOpacity>
+            {onCancel && (
+              <TouchableOpacity onPress={onCancel}>
+                <Text style={styles.cancel}>Cancel</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -139,4 +139,4 @@ const AddHero = ({ navigation, isLoading, add, update, heroes, route }: Props) =
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(state => ({ ...state.heroes }), {
   add: addHero,
   update: updateHero,
-})(AddHero);
+})(HeroEdit);

@@ -14,6 +14,8 @@ import HeroView from '../HeroView/HeroView';
 import HomeSideMenu from './components/HomeSideMenu';
 import SideMenu from 'src/components/SideMenu/SideMenu';
 import styles from './styles';
+import HeroEdit from '../HeroEdit/components/HeroEdit/HeroEdit';
+import { plus } from 'assets/images';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -35,22 +37,29 @@ interface OwnProps {
 type Props = OwnProps & StateProps & DispatchProps;
 
 interface TabRoute {
-  key: HeroClass;
+  key: string;
   title: string;
 }
 
 const Home = ({ isLoading, heroes, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const routes: TabRoute[] = useMemo(() => heroes.map(({ heroClass }) => ({ key: heroClass, title: heroClass })), [heroes.length]);
+  const [isNewHero, setIsNewHero] = useState(false);
+  const routes: TabRoute[] = useMemo(
+    () =>
+      heroes
+        .map(({ heroClass }) => ({ key: heroClass as string, title: heroClass as string }))
+        .concat(heroes.length < Math.min(classes.length, 5) ? [{ key: 'add', title: 'Add Hero' }] : []),
+    [heroes.length]
+  );
   const refs = (Object.keys(HeroClass) as Array<HeroClass>).reduce((acc, val) => ({ ...acc, [val]: useRef(null) }), {});
   const renderScene = ({ route: { key } }: { route: TabRoute }) => {
-    return <HeroView heroClass={key} ref={refs[key]} />;
+    return key in HeroClass ? (
+      <HeroView heroClass={key as HeroClass} onEdit={() => navigation.navigate('HeroEdit', { hero: key as HeroClass })} ref={refs[key]} />
+    ) : (
+      <HeroEdit key={`AddHero_${index === heroes.length ? 'active' : 'inactive'}`} onSubmit={() => setIsNewHero(true)} />
+    );
   };
-  const blurUpdate = useCallback(() => {
-    if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
-  }, [update, refs, routes, index]);
-
   useEffect(() => {
     loadHeroesData();
   }, [loadHeroesData]);
@@ -60,58 +69,49 @@ const Home = ({ isLoading, heroes, navigation, loadHeroesData, add, update, hero
     }
   }, [heroesLoaded]);
   useEffect(() => {
-    const sub = navigation.addListener('blur', blurUpdate);
+    const sub = navigation.addListener('blur', () => {
+      if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
+    });
     return sub;
-  }, [blurUpdate]);
+  }, [update, refs, routes, index]);
+  useEffect(() => {
+    if (isNewHero) setIndex(heroes.length - 1);
+  }, [heroes.length]);
   return (
     <>
       <Loader active={isLoading} />
-      <SideMenu
-        menu={
-          <HomeSideMenu
-            heroes={heroes}
-            onAddHero={() => {
-              navigation.navigate('HeroEdit');
-              setIsSideMenuOpen(false);
+      <View style={styles.container}>
+        {heroesLoaded ? (
+          <TabView
+            navigationState={{ index, routes }}
+            renderScene={renderScene}
+            onIndexChange={i => {
+              if (index < routes.length && routes[index].key in HeroClass) update(refs[routes[index].key].current?.state?.heroModel);
+              setIndex(i);
             }}
-            onHeroPress={hero => {
-              navigation.navigate('HeroEdit', { hero: hero.heroClass });
-              setIsSideMenuOpen(false);
-            }}
-          />
-        }
-        isOpen={isSideMenuOpen}
-        onChange={value => setIsSideMenuOpen(value)}
-        anchorWidth={16}>
-        <View style={styles.container}>
-          {heroesLoaded ? (
-            <TabView
-              navigationState={{ index, routes }}
-              renderScene={renderScene}
-              onIndexChange={i => {
-                if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
-                setIndex(i);
-              }}
-              sceneContainerStyle={styles.sceneContainer}
-              renderTabBar={props => (
-                <TabBar
-                  {...props}
-                  style={styles.tabBar}
-                  indicatorStyle={styles.tabIndicator}
-                  renderIcon={({ route }) => (
+            sceneContainerStyle={styles.sceneContainer}
+            renderTabBar={props => (
+              <TabBar
+                {...props}
+                style={styles.tabBar}
+                indicatorStyle={styles.tabIndicator}
+                renderIcon={({ route: { key } }) =>
+                  key in HeroClass ? (
                     <Image
-                      source={classes.find(c => c.name === heroes.find(x => x.heroClass === route.key)!.heroClass)!.icon}
-                      style={{ width: 32, height: 32, resizeMode: 'contain', tintColor: '#fff' }}
+                      source={classes.find(c => c.name === heroes.find(x => x.heroClass === key)!.heroClass)!.icon}
+                      style={styles.heroIcon}
                     />
-                  )}
-                  getLabelText={() => undefined}
-                  labelStyle={{ fontSize: 12, textTransform: 'uppercase', textAlign: 'center' }}
-                />
-              )}
-            />
-          ) : null}
-        </View>
-      </SideMenu>
+                  ) : (
+                    <Image source={plus} style={styles.addHeroIcon} />
+                  )
+                }
+                getLabelText={({ route: { key } }) => (!(key in HeroClass) ? 'Add Hero' : undefined)}
+                labelStyle={styles.addHeroLabel}
+              />
+            )}
+          />
+        ) : null}
+      </View>
     </>
   );
 };
