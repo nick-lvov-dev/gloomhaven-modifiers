@@ -1,14 +1,16 @@
 import { Modifier } from '../Modifiers/models/Modifier';
 import StandardModifiers from '../Modifiers/StandardModifiers';
 
-const StandardModifierDeck: Modifier[] = [];
+export default () => {
+  const deck: Modifier[] = [];
 
-for (let i = 0; i < 6; i++) StandardModifierDeck.push(StandardModifiers.Zero);
-for (let i = 0; i < 5; i++) StandardModifierDeck.push(StandardModifiers.One);
-for (let i = 0; i < 5; i++) StandardModifierDeck.push(StandardModifiers.MinusOne);
-StandardModifierDeck.push(StandardModifiers.Two);
-StandardModifierDeck.push(StandardModifiers.MinusTwo);
-StandardModifierDeck.push(StandardModifiers.Double);
-StandardModifierDeck.push(StandardModifiers.NoDamage);
+  for (let i = 0; i < 6; i++) deck.push(StandardModifiers.Zero);
+  for (let i = 0; i < 5; i++) deck.push(StandardModifiers.One);
+  for (let i = 0; i < 5; i++) deck.push(StandardModifiers.MinusOne);
+  deck.push(StandardModifiers.Two);
+  deck.push(StandardModifiers.MinusTwo);
+  deck.push(StandardModifiers.Double);
+  deck.push(StandardModifiers.NoDamage);
 
-export default StandardModifierDeck;
+  return deck;
+};

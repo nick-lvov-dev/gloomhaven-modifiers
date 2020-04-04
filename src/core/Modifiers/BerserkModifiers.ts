@@ -12,44 +12,44 @@ const BerserkModifiers: {
   TwoNext: Modifier;
   WoundNext: Modifier;
 } = {
-  HealOneNext: {
+  HealOneNext: Object.freeze({
     id: nameof<typeof berserkModifiers>('berserkHealOneNext'),
     image: berserkModifiers.berserkHealOneNext,
     heal: 1,
     next: true,
-  },
-  One: { id: nameof<typeof berserkModifiers>('berserkOne'), image: berserkModifiers.berserkOne, attack: 1 },
-  OneDisarmNext: {
+  }),
+  One: Object.freeze({ id: nameof<typeof berserkModifiers>('berserkOne'), image: berserkModifiers.berserkOne, attack: 1 }),
+  OneDisarmNext: Object.freeze({
     id: nameof<typeof berserkModifiers>('berserkOneDisarmNext'),
     image: berserkModifiers.berserkOneDisarmNext,
     attack: 1,
     effects: [ModifierEffect.Disarm],
     next: true,
-  },
-  StunNext: {
+  }),
+  StunNext: Object.freeze({
     id: nameof<typeof berserkModifiers>('berserkStunNext'),
     image: berserkModifiers.berserkStunNext,
     effects: [ModifierEffect.Stun],
     next: true,
-  },
-  TwoFire: {
+  }),
+  TwoFire: Object.freeze({
     id: nameof<typeof berserkModifiers>('berserkTwoFire'),
     image: berserkModifiers.berserkTwoFire,
     attack: 2,
     effects: [ModifierEffect.Fire],
-  },
-  TwoNext: {
+  }),
+  TwoNext: Object.freeze({
     id: nameof<typeof berserkModifiers>('berserkTwoNext'),
     image: berserkModifiers.berserkTwoNext,
     attack: 2,
     next: true,
-  },
-  WoundNext: {
+  }),
+  WoundNext: Object.freeze({
     id: nameof<typeof berserkModifiers>('berserkWoundNext'),
     image: berserkModifiers.berserkWoundNext,
     next: true,
     effects: [ModifierEffect.Wound],
-  },
+  }),
 };
 
-export default BerserkModifiers;
+export default Object.freeze(BerserkModifiers);

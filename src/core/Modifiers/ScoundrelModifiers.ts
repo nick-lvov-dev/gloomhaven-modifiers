@@ -13,34 +13,34 @@ const ScoundrelModifiers: {
   MuddleNext: Modifier;
   InvisibilityNext: Modifier;
 } = {
-  Zero: { id: nameof<typeof scoundrelModifiers>('scoundrelZero'), image: scoundrelModifiers.scoundrelZero, attack: 0 },
-  One: { id: nameof<typeof scoundrelModifiers>('scoundrelOne'), image: scoundrelModifiers.scoundrelOne, attack: 1 },
-  Two: { id: nameof<typeof scoundrelModifiers>('scoundrelTwo'), image: scoundrelModifiers.scoundrelTwo, attack: 2 },
-  OneNext: { id: nameof<typeof scoundrelModifiers>('scoundrelOneNext'), image: scoundrelModifiers.scoundrelOneNext, attack: 1, next: true },
-  MuddleNext: {
+  Zero: Object.freeze({ id: nameof<typeof scoundrelModifiers>('scoundrelZero'), image: scoundrelModifiers.scoundrelZero, attack: 0 }),
+  One: Object.freeze({ id: nameof<typeof scoundrelModifiers>('scoundrelOne'), image: scoundrelModifiers.scoundrelOne, attack: 1 }),
+  Two: Object.freeze({ id: nameof<typeof scoundrelModifiers>('scoundrelTwo'), image: scoundrelModifiers.scoundrelTwo, attack: 2 }),
+  OneNext: Object.freeze({ id: nameof<typeof scoundrelModifiers>('scoundrelOneNext'), image: scoundrelModifiers.scoundrelOneNext, attack: 1, next: true }),
+  MuddleNext: Object.freeze({
     id: nameof<typeof scoundrelModifiers>('scoundrelMuddleNext'),
     image: scoundrelModifiers.scoundrelMuddleNext,
     next: true,
     effects: [ModifierEffect.Muddle],
-  },
-  PierceNext: {
+  }),
+  PierceNext: Object.freeze({
     id: nameof<typeof scoundrelModifiers>('scoundrelPierceNext'),
     image: scoundrelModifiers.scoundrelPierceNext,
     next: true,
     pierce: 3,
-  },
-  PoisonNext: {
+  }),
+  PoisonNext: Object.freeze({
     id: nameof<typeof scoundrelModifiers>('scoundrelPoisonNext'),
     image: scoundrelModifiers.scoundrelPoisonNext,
     next: true,
     effects: [ModifierEffect.Poison],
-  },
-  InvisibilityNext: {
+  }),
+  InvisibilityNext: Object.freeze({
     id: nameof<typeof scoundrelModifiers>('scoundrelInvisibilityNext'),
     image: scoundrelModifiers.scoundrelInvisibilityNext,
     next: true,
     effects: [ModifierEffect.Invisible],
-  },
+  }),
 };
 
-export default ScoundrelModifiers;
+export default Object.freeze(ScoundrelModifiers);

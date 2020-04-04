@@ -13,24 +13,24 @@ const MonsterModifiers: {
   NoDamage: Modifier;
   Curse: Modifier;
 } = {
-  Zero: { id: nameof<typeof monsterModifiers>('monsterZero'), image: monsterModifiers.monsterZero, attack: 0 },
-  One: { id: nameof<typeof monsterModifiers>('monsterOne'), image: monsterModifiers.monsterOne, attack: 1 },
-  MinusOne: { id: nameof<typeof monsterModifiers>('monsterNOne'), image: monsterModifiers.monsterNOne, attack: -1 },
-  Two: { id: nameof<typeof monsterModifiers>('monsterTwo'), image: monsterModifiers.monsterTwo, attack: 2 },
-  MinusTwo: { id: nameof<typeof monsterModifiers>('monsterNTwo'), image: monsterModifiers.monsterNTwo, attack: -2 },
-  Double: {
+  Zero: Object.freeze({ id: nameof<typeof monsterModifiers>('monsterZero'), image: monsterModifiers.monsterZero, attack: 0 }),
+  One: Object.freeze({ id: nameof<typeof monsterModifiers>('monsterOne'), image: monsterModifiers.monsterOne, attack: 1 }),
+  MinusOne: Object.freeze({ id: nameof<typeof monsterModifiers>('monsterNOne'), image: monsterModifiers.monsterNOne, attack: -1 }),
+  Two: Object.freeze({ id: nameof<typeof monsterModifiers>('monsterTwo'), image: monsterModifiers.monsterTwo, attack: 2 }),
+  MinusTwo: Object.freeze({ id: nameof<typeof monsterModifiers>('monsterNTwo'), image: monsterModifiers.monsterNTwo, attack: -2 }),
+  Double: Object.freeze({
     id: nameof<typeof monsterModifiers>('monsterDouble'),
     image: monsterModifiers.monsterDouble,
     shuffle: true,
     effects: [ModifierEffect.Double],
-  },
-  NoDamage: {
+  }),
+  NoDamage: Object.freeze({
     id: nameof<typeof monsterModifiers>('monsterEmpty'),
     image: monsterModifiers.monsterEmpty,
     shuffle: true,
     effects: [ModifierEffect.NoAttack],
-  },
-  Curse: { id: nameof<typeof monsterModifiers>('monsterCurse'), image: monsterModifiers.monsterCurse, effects: [ModifierEffect.NoAttack] },
+  }),
+  Curse: Object.freeze({ id: nameof<typeof monsterModifiers>('monsterCurse'), image: monsterModifiers.monsterCurse, effects: [ModifierEffect.NoAttack] }),
 };
 
-export default MonsterModifiers;
+export default Object.freeze(MonsterModifiers);
