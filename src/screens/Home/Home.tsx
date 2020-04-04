@@ -90,14 +90,14 @@ const Home = ({ heroes, navigation, loadHeroesData, add, update, heroesLoaded }:
               {...props}
               style={styles.tabBar}
               indicatorStyle={styles.tabIndicator}
-              renderIcon={({ route: { key } }) =>
+              renderIcon={({ route: { key }, focused }) =>
                 key in HeroClass ? (
                   <Image
                     source={classes.find(c => c.name === heroes.find(x => x.heroClass === key)!.heroClass)!.icon}
-                    style={styles.heroIcon}
+                    style={[styles.heroIcon, focused ? styles.heroIconFocused : null]}
                   />
                 ) : (
-                  <Image source={plus} style={styles.addHeroIcon} />
+                  <Image source={plus} style={[styles.addHeroIcon, focused ? styles.heroIconFocused : null]} />
                 )
               }
               getLabelText={({ route: { key } }) => (!(key in HeroClass) ? 'Add Hero' : undefined)}

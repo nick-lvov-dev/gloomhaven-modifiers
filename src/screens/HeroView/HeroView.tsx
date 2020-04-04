@@ -118,6 +118,7 @@ class HeroView extends Component<Props, State> {
               <Image source={roundShadow} style={styles.actionShadow} />
               <Text style={styles.modifierActionText}>{hero.extraMinusOneTotal}</Text>
             </TouchableOpacity>
+            <HeroAction image={reload} onPress={() => this.onShuffle(hero)} style={styles.shuffleWrapper} imageStyle={styles.shuffle} />
           </View>
           <View style={styles.actions}>
             {!this.isMonster && (
@@ -134,17 +135,10 @@ class HeroView extends Component<Props, State> {
           </View>
           <Text style={styles.total}>{total}</Text>
           <View style={styles.deckContainer}>
-            <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo}>
+            <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo} style={styles.advantageDisadvantageWrapper}>
               <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
             </TouchableOpacity>
             <Deck hero={hero} onDraw={this.onDraw} />
-            <HeroAction
-              image={reload}
-              onPress={() => this.onShuffle(hero)}
-              style={styles.shuffleWrapper}
-              imageStyle={{ width: 28, height: 28 }}
-              shadowStyle={{ width: 46, height: 46 }}
-            />
           </View>
         </View>
       </>
