@@ -56,7 +56,7 @@ const HeroEdit = ({ isLoading, add, update, heroes, heroClass: hero, onSubmit, o
   const submit = () => {
     const hero = new Hero(
       heroClass.name,
-      isEdit ? mapModifierIdsToModifiers(heroClass.name, heroVm!.defaultModifiers) : StandardModifierDeck,
+      isEdit ? mapModifierIdsToModifiers(heroClass.name, heroVm!.defaultModifiers) : StandardModifierDeck(),
       {
         upgrades: isEdit ? heroVm!.upgrades : [],
       }

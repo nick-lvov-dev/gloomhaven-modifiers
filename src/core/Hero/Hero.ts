@@ -156,7 +156,7 @@ export class Hero {
   };
 
   updateUpgrades = (upgrades: ClassUpgrade[]) => {
-    this._defaultModifiers = cloneDeep(StandardModifierDeck);
+    this._defaultModifiers = StandardModifierDeck();
     this._upgrades = [];
     for (const upgrade of upgrades) this._addUpgrade(upgrade);
     this.shuffle(true);

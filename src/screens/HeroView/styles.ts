@@ -28,6 +28,8 @@ export default StyleSheet.create({
   modifierActionText: { fontFamily: FontFamily.Pirata, fontSize: 32, color: colors.dark },
   advantageDisadvantage: { width: 60, height: 60, resizeMode: 'contain' },
   advantageDisadvantageWrapper: { position: 'absolute', left: 16, top: '50%', transform: [{ translateY: -30 }] },
+  undo: { width: 52, height: 52, resizeMode: 'contain', tintColor: colors.darker },
+  undoWrapper: { position: 'absolute', right: 16, top: '50%', transform: [{ translateY: -30 }] },
   total: {
     color: '#000',
     fontFamily: FontFamily.SemiBold,

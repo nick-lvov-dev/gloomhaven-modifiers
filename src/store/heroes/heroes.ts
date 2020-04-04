@@ -35,7 +35,7 @@ const slice = createSlice({
   name: 'heroes',
   initialState,
   reducers: {
-    setHeroes: (state, action: PayloadAction<HeroVm[]>) => {
+    load: (state, action: PayloadAction<HeroVm[]>) => {
       const heroes = action.payload;
       return {
         ...state,
@@ -49,8 +49,10 @@ const slice = createSlice({
   },
 });
 
-export const { actions: HeroesActions, reducer: HeroesReducer } = slice;
-const { setHeroes, setLoading } = HeroesActions;
+export const { actions: HeroesActions } = slice;
+export default slice.reducer;
+
+const { load, setLoading } = HeroesActions;
 
 export const loadHeroes = () => async (dispatch: Dispatch, getState: () => RootState) => {
   // await AsyncStorage.removeItem(HEROES_STORAGE_KEY);
@@ -62,7 +64,7 @@ export const loadHeroes = () => async (dispatch: Dispatch, getState: () => RootS
       addHero(new HeroVm(Monsters))(dispatch, getState);
       return;
     }
-    dispatch(setHeroes(heroes));
+    dispatch(load(heroes));
     dispatch(setLoading(false));
   } catch (e) {
     dispatch(setLoading(false));
@@ -78,7 +80,7 @@ export const addHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: ()
   }
   try {
     await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([hero])));
-    dispatch(setHeroes(heroes.concat([cloneDeep(hero)])));
+    dispatch(load(heroes.concat([cloneDeep(hero)])));
     dispatch(setLoading(false));
   } catch (e) {
     dispatch(setLoading(false));
@@ -90,7 +92,7 @@ export const updateHero = (hero: HeroVm) => async (dispatch: Dispatch, getState:
   const heroes = getState().heroes.heroes.map(x => (x.heroClass === hero.heroClass ? cloneDeep(hero) : x));
   try {
     await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
-    dispatch(setHeroes(heroes));
+    dispatch(load(heroes));
     dispatch(setLoading(false));
   } catch (e) {
     dispatch(setLoading(false));
@@ -102,7 +104,7 @@ export const removeHero = (heroClass: HeroClass) => async (dispatch: Dispatch, g
   const heroes = getState().heroes.heroes.filter(x => x.heroClass !== heroClass);
   try {
     await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
-    dispatch(setHeroes(heroes));
+    dispatch(load(heroes));
     dispatch(setLoading(false));
   } catch (e) {
     dispatch(setLoading(false));
