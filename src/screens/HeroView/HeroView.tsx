@@ -118,12 +118,7 @@ class HeroView extends Component<Props, State> {
               <Image source={roundShadow} style={styles.actionShadow} />
               <Text style={styles.modifierActionText}>{hero.extraMinusOneTotal}</Text>
             </TouchableOpacity>
-            <HeroAction
-              image={reload}
-              onPress={() => this.onShuffle(hero)}
-              style={styles.shuffleWrapper}
-              imageStyle={{ transform: [{ rotateY: '180deg' }] }}
-            />
+            <HeroAction image={reload} onPress={() => this.onShuffle(hero)} style={styles.shuffleWrapper} imageStyle={styles.shuffle} />
           </View>
           <View style={styles.actions}>
             {!this.isMonster && (

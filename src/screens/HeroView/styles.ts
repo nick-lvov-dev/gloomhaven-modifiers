@@ -18,6 +18,7 @@ export default StyleSheet.create({
     alignSelf: 'flex-start',
     transform: [{ rotate: '45deg' }],
   },
+  shuffle: { transform: [{ rotateY: '180deg' }] },
   actions: { position: 'absolute', right: 0, top: 0, padding: 16, alignItems: 'center' },
   modifiers: { position: 'absolute', left: 0, top: 0, padding: 16, alignItems: 'stretch' },
   action: { marginBottom: 24, justifyContent: 'center', alignSelf: 'flex-start' },
@@ -27,7 +28,6 @@ export default StyleSheet.create({
   modifierActionText: { fontFamily: FontFamily.Pirata, fontSize: 32, color: colors.dark },
   advantageDisadvantage: { width: 60, height: 60, resizeMode: 'contain' },
   advantageDisadvantageWrapper: { position: 'absolute', left: 16, top: '50%', transform: [{ translateY: -30 }] },
-  shuffle: { width: 24, height: 24, resizeMode: 'contain' },
   total: {
     color: '#000',
     fontFamily: FontFamily.SemiBold,
