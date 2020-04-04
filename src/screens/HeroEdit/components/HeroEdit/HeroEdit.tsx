@@ -28,7 +28,7 @@ interface DispatchProps {
 
 interface OwnProps {
   heroClass?: HeroClass;
-  onSubmit: () => void;
+  onSubmit?: () => void;
   onCancel?: () => void;
 }
 
@@ -67,7 +67,7 @@ const HeroEdit = ({ isLoading, add, update, heroes, heroClass: hero, onSubmit, o
     if (isEdit) update(new HeroVm(hero));
     else add(new HeroVm(hero));
 
-    onSubmit();
+    onSubmit && onSubmit();
   };
   return (
     <>
