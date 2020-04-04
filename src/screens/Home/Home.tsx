@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { View, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
-import Loader from '../../components/Loader/Loader';
 import { connect } from 'react-redux';
 import { loadHeroes, addHero, removeHero, updateHero } from 'src/store/heroes/heroes';
 import { RootState } from 'src/store/store';
@@ -11,8 +10,6 @@ import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Monsters } from 'src/common/Monsters';
 import { TabView, TabBar } from 'react-native-tab-view';
 import HeroView from '../HeroView/HeroView';
-import HomeSideMenu from './components/HomeSideMenu';
-import SideMenu from 'src/components/SideMenu/SideMenu';
 import styles from './styles';
 import HeroEdit from '../HeroEdit/components/HeroEdit/HeroEdit';
 import { plus } from 'assets/images';
@@ -41,8 +38,8 @@ interface TabRoute {
   title: string;
 }
 
-const Home = ({ isLoading, heroes, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
-  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+const Home = ({ heroes, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
+  const [] = useState(false);
   const [index, setIndex] = useState(0);
   const [isNewHero, setIsNewHero] = useState(false);
   const routes: TabRoute[] = useMemo(
@@ -78,41 +75,38 @@ const Home = ({ isLoading, heroes, navigation, loadHeroesData, add, update, hero
     if (isNewHero) setIndex(heroes.length - 1);
   }, [heroes.length]);
   return (
-    <>
-      <Loader active={isLoading} />
-      <View style={styles.container}>
-        {heroesLoaded ? (
-          <TabView
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={i => {
-              if (index < routes.length && routes[index].key in HeroClass) update(refs[routes[index].key].current?.state?.heroModel);
-              setIndex(i);
-            }}
-            sceneContainerStyle={styles.sceneContainer}
-            renderTabBar={props => (
-              <TabBar
-                {...props}
-                style={styles.tabBar}
-                indicatorStyle={styles.tabIndicator}
-                renderIcon={({ route: { key } }) =>
-                  key in HeroClass ? (
-                    <Image
-                      source={classes.find(c => c.name === heroes.find(x => x.heroClass === key)!.heroClass)!.icon}
-                      style={styles.heroIcon}
-                    />
-                  ) : (
-                    <Image source={plus} style={styles.addHeroIcon} />
-                  )
-                }
-                getLabelText={({ route: { key } }) => (!(key in HeroClass) ? 'Add Hero' : undefined)}
-                labelStyle={styles.addHeroLabel}
-              />
-            )}
-          />
-        ) : null}
-      </View>
-    </>
+    <View style={styles.container}>
+      {heroesLoaded ? (
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={i => {
+            if (index < routes.length && routes[index].key in HeroClass) update(refs[routes[index].key].current?.state?.heroModel);
+            setIndex(i);
+          }}
+          sceneContainerStyle={styles.sceneContainer}
+          renderTabBar={props => (
+            <TabBar
+              {...props}
+              style={styles.tabBar}
+              indicatorStyle={styles.tabIndicator}
+              renderIcon={({ route: { key } }) =>
+                key in HeroClass ? (
+                  <Image
+                    source={classes.find(c => c.name === heroes.find(x => x.heroClass === key)!.heroClass)!.icon}
+                    style={styles.heroIcon}
+                  />
+                ) : (
+                  <Image source={plus} style={styles.addHeroIcon} />
+                )
+              }
+              getLabelText={({ route: { key } }) => (!(key in HeroClass) ? 'Add Hero' : undefined)}
+              labelStyle={styles.addHeroLabel}
+            />
+          )}
+        />
+      ) : null}
+    </View>
   );
 };
 

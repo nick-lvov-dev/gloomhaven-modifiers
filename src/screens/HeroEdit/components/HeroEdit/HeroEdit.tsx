@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import styles from './styles';
 import { classes, HeroClass } from 'src/core/HeroClass';
-import Loader from '../../../../components/Loader/Loader';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
 import StandardModifierDeck from 'src/core/ModifierDecks/StandardModifierDeck';
@@ -72,7 +71,6 @@ const HeroEdit = ({ isLoading, add, update, heroes, heroClass: hero, onSubmit, o
   };
   return (
     <>
-      <Loader active={isLoading} />
       <ClassSelect
         isVisible={isClassSelectOpen}
         onBackdropPress={() => setIsClassSelectOpen(false)}

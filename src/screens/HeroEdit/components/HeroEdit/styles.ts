@@ -9,6 +9,7 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'stretch',
+    backgroundColor: colors.background,
   },
   scroll: { padding: 32, flexGrow: 1, justifyContent: 'space-between' },
   topContentWrapper: { alignItems: 'center' },
