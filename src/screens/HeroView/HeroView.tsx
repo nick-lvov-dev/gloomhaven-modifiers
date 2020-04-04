@@ -3,22 +3,20 @@ import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { reload, trash, advantageDisadvantage, effectShadow, roundShadow, edit, plus } from 'assets/images';
+import { reload, advantageDisadvantage, effectShadow, roundShadow, edit, plus, undo } from 'assets/images';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
 import Deck from './components/Deck/Deck';
-import { isEqual } from 'lodash';
 import { removeHero } from 'src/store/heroes/heroes';
 import { activeOpacity } from 'src/core/contstants';
 import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
 import DrawTwo from './components/DrawTwo/DrawTwo';
 import statusIcons from 'src/core/images/statusIcons';
 import HeroAction from './components/HeroAction/HeroAction';
-import { width } from 'src/core/Dimensions';
 
 interface StateProps {
-  heroes: HeroVm[];
+  hero: HeroVm;
   blessCount: number;
   heroCurseCount: number;
 }
@@ -35,21 +33,20 @@ interface OwnProps {
 type Props = StateProps & OwnProps & DispatchProps;
 
 interface State {
+  history: HeroVm[];
   heroModel: HeroVm;
   isDrawTwo: boolean;
 }
 
 class HeroView extends Component<Props, State> {
   state: State = {
-    heroModel: this.props.heroes.find(x => x.heroClass === this.props.heroClass)!,
+    history: [],
+    heroModel: this.props.hero,
     isDrawTwo: false,
   };
 
-  componentDidUpdate({ heroes }: Props) {
-    if (!isEqual(heroes, this.props.heroes)) {
-      this.setState({ heroModel: this.props.heroes.find(x => x.heroClass === this.props.heroClass)! });
-    }
-  }
+  private _save = (hero: HeroVm) => this.setState({ history: [...this.state.history, this.state.heroModel], heroModel: hero });
+
   get isMonster() {
     return this.state.heroModel.heroClass === HeroClass.Monsters;
   }
@@ -57,42 +54,50 @@ class HeroView extends Component<Props, State> {
   get hero() {
     return mapVmToHero(this.state.heroModel);
   }
+
   getOtherCursesCount = (hero: Hero) => {
     return this.isMonster ? 0 : this.props.heroCurseCount - hero.cursesTotal;
   };
+
   getOtherBlessesCount = (hero: Hero) => {
     return this.props.blessCount - hero.blessesTotal;
   };
 
-  onDraw = (hero: Hero) => this.setState({ heroModel: new HeroVm(hero) });
+  onDraw = (hero: Hero) => this._save(new HeroVm(hero));
 
   onShuffle = (hero: Hero) => {
     hero.shuffle(true);
-    this.setState({ heroModel: new HeroVm(hero) });
+    this._save(new HeroVm(hero));
   };
 
   onAddBless = (hero: Hero) => {
     if (this.getOtherBlessesCount(hero) + hero.blessesTotal === 10) return;
     hero.addBless();
-    this.setState({ heroModel: new HeroVm(hero) });
+    this._save(new HeroVm(hero));
   };
 
   onAddCurse = (hero: Hero) => {
     if (this.getOtherCursesCount(hero) + hero.cursesTotal === 10) return;
     hero.addCurse();
-    this.setState({ heroModel: new HeroVm(hero) });
+    this._save(new HeroVm(hero));
   };
 
   onAddMinusOne = (hero: Hero) => {
     hero.addMinusOne();
-    this.setState({ heroModel: new HeroVm(hero) });
+    this._save(new HeroVm(hero));
   };
 
   onDrawTwo = () => this.setState({ isDrawTwo: true });
 
-  onDrawTwoClose = (hero: Hero) => this.setState({ isDrawTwo: false, heroModel: new HeroVm(hero) });
+  onDrawTwoClose = (hero: Hero) => this.setState({ isDrawTwo: false }, () => this._save(new HeroVm(hero)));
 
   delete = () => this.props.delete(this.props.heroClass);
+
+  undo = () => {
+    const { history } = this.state;
+    if (!history.length) return;
+    this.setState({ history: history.slice(0, history.length - 1), heroModel: history.slice(-1)[0] });
+  };
 
   render() {
     const hero = this.hero;
@@ -139,6 +144,9 @@ class HeroView extends Component<Props, State> {
               <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
             </TouchableOpacity>
             <Deck hero={hero} onDraw={this.onDraw} />
+            <TouchableOpacity activeOpacity={activeOpacity} onPress={this.undo} style={styles.undoWrapper}>
+              <Image source={undo} style={styles.undo} />
+            </TouchableOpacity>
           </View>
         </View>
       </>
@@ -147,9 +155,9 @@ class HeroView extends Component<Props, State> {
 }
 
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(
-  state => {
+  (state, ownProps) => {
     const { heroes, blessCount, heroCurseCount } = state.heroes;
-    return { heroes, blessCount, heroCurseCount };
+    return { hero: heroes.find(x => x.heroClass === ownProps.heroClass)!, blessCount, heroCurseCount };
   },
   { delete: removeHero },
   null,
