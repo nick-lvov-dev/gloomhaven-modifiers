@@ -53,7 +53,7 @@ export const { actions: HeroesActions, reducer: HeroesReducer } = slice;
 const { setHeroes, setLoading } = HeroesActions;
 
 export const loadHeroes = () => async (dispatch: Dispatch, getState: () => RootState) => {
-  await AsyncStorage.removeItem(HEROES_STORAGE_KEY);
+  // await AsyncStorage.removeItem(HEROES_STORAGE_KEY);
   dispatch(setLoading(true));
   try {
     const heroesJson = await AsyncStorage.getItem(HEROES_STORAGE_KEY);
