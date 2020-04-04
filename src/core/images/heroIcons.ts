@@ -5,6 +5,7 @@ const heroIcons: { [key in HeroClass]: any } = {
   Tinkerer: require('../../../assets/images/classes/tinkerer.png'),
   Monsters: require('../../../assets/images/classes/monster.png'),
   Tyrant: require('../../../assets/images/classes/tyrant.png'),
+  Berserk: require('../../../assets/images/classes/berserk.png'),
 };
 
 export default heroIcons;

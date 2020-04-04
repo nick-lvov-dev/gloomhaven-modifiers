@@ -4,6 +4,7 @@ export enum HeroClass {
   Scoundrel = 'Scoundrel',
   Tinkerer = 'Tinkerer',
   Tyrant = 'Tyrant',
+  Berserk = 'Berserk',
   Monsters = 'Monsters',
 }
 
