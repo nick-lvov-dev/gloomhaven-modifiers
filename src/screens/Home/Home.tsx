@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { View, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
@@ -41,39 +41,32 @@ interface TabRoute {
 const Home = ({ heroes, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
   const [] = useState(false);
   const [index, setIndex] = useState(0);
-  const [isNewHero, setIsNewHero] = useState(false);
   const routes: TabRoute[] = useMemo(
     () =>
       heroes
         .map(({ heroClass }) => ({ key: heroClass as string, title: heroClass as string }))
         .concat(heroes.length < Math.min(classes.length, 5) ? [{ key: 'add', title: 'Add Hero' }] : []),
-    [heroes.length]
+    [heroes]
   );
   const refs = (Object.keys(HeroClass) as Array<HeroClass>).reduce((acc, val) => ({ ...acc, [val]: useRef(null) }), {});
-  const renderScene = ({ route: { key } }: { route: TabRoute }) => {
-    return key in HeroClass ? (
-      <HeroView heroClass={key as HeroClass} onEdit={() => navigation.navigate('HeroEdit', { hero: key as HeroClass })} ref={refs[key]} />
-    ) : (
-      <HeroEdit key={`AddHero_${index === heroes.length ? 'active' : 'inactive'}`} onSubmit={() => setIsNewHero(true)} />
-    );
-  };
+  const renderScene = useCallback(
+    ({ route: { key } }: { route: TabRoute }) =>
+      key in HeroClass ? (
+        <HeroView heroClass={key as HeroClass} onEdit={() => navigation.navigate('HeroEdit', { hero: key as HeroClass })} ref={refs[key]} />
+      ) : (
+        <HeroEdit key={`AddHero_${index === heroes.length ? 'active' : 'inactive'}`} />
+      ),
+    [heroes]
+  );
   useEffect(() => {
     loadHeroesData();
   }, [loadHeroesData]);
-  useEffect(() => {
-    if (heroesLoaded && !heroes.some(x => x.heroClass === HeroClass.Monsters)) {
-      add(new HeroVm(Monsters));
-    }
-  }, [heroesLoaded]);
   useEffect(() => {
     const sub = navigation.addListener('blur', () => {
       if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
     });
     return sub;
   }, [update, refs, routes, index]);
-  useEffect(() => {
-    if (isNewHero) setIndex(heroes.length - 1);
-  }, [heroes.length]);
   return (
     <View style={styles.container}>
       {heroesLoaded ? (

@@ -5,6 +5,7 @@ import { HeroVm } from './models/HeroVm';
 import { cloneDeep } from 'lodash';
 import StandardModifiers from 'src/core/Modifiers/StandardModifiers';
 import { HeroClass } from 'src/core/HeroClass';
+import { Monsters } from 'src/common/Monsters';
 
 const HEROES_STORAGE_KEY = 'HEROES_STORAGE_KEY';
 
@@ -51,12 +52,16 @@ const slice = createSlice({
 export const { actions: HeroesActions, reducer: HeroesReducer } = slice;
 const { setHeroes, setLoading } = HeroesActions;
 
-export const loadHeroes = () => async (dispatch: Dispatch) => {
+export const loadHeroes = () => async (dispatch: Dispatch, getState: () => RootState) => {
   // await AsyncStorage.removeItem(HEROES_STORAGE_KEY);
   dispatch(setLoading(true));
   try {
     const heroesJson = await AsyncStorage.getItem(HEROES_STORAGE_KEY);
     const heroes = heroesJson ? (JSON.parse(heroesJson) as HeroVm[]) : [];
+    if (!heroes.length) {
+      addHero(new HeroVm(Monsters))(dispatch, getState);
+      return;
+    }
     dispatch(setHeroes(heroes));
     dispatch(setLoading(false));
   } catch (e) {
