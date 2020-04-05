@@ -7,7 +7,7 @@ export default StyleSheet.create({
     fontFamily: FontFamily.Pirata,
     fontSize: 24,
     marginRight: 8,
-    marginBottom: 8,
+    paddingBottom: 8,
   },
   icon: {
     marginRight: 4,
