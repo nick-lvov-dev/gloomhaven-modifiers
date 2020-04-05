@@ -10,7 +10,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "visualize": "react-native-bundle-visualizer --platform android"
   },
   "dependencies": {
     "@bam.tech/react-native-make": "^2.0.0",
@@ -59,6 +60,7 @@
     "metro-react-native-babel-preset": "^0.56.0",
     "minimist": "^1.2.5",
     "prettier": "^1.19.1",
+    "react-native-bundle-visualizer": "^2.1.1",
     "react-native-typescript-transformer": "^1.2.13",
     "react-test-renderer": "16.9.0",
     "ts-jest": "^25.2.1",
