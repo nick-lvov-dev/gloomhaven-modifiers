@@ -7,6 +7,8 @@ import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper'
 import ModifierView from '../ModifierView/ModifierView';
 import { Hero, DrawResult } from 'src/core/Hero/Hero';
 import styles from './styles';
+import DrawTotal from '../DrawTotal/DrawTotal';
+import { ScrollView } from 'react-native-gesture-handler';
 
 interface Props {
   hero: HeroVm;
@@ -33,16 +35,22 @@ export default ({ hero: heroVm, visible, onClose }: Props) => {
       backdropOpacity={0.9}
       style={styles.modal}>
       <TouchableWithoutFeedback onPress={() => onClose(hero)}>
-        <View style={styles.container}>
-          {drawTwoResult.map((result, index) => (
-            <View style={styles.result} key={`drawTwoResult_${index}`}>
-              <Text style={styles.resultTotal}>{result.total}</Text>
-              {result.drawn.map((modifier, i) => (
-                <ModifierView key={`drawTwoDrawn_${index}_${i}`} modifier={modifier} width={width / 2 - 48} style={styles.modifier} />
-              ))}
-            </View>
-          ))}
-        </View>
+        <>
+          <View style={{ flexGrow: 0, flexShrink: 0, flexDirection: 'row', margin: 32, marginBottom: 0 }}>
+            {drawTwoResult.map(result => (
+              <DrawTotal total={result.total} color={'#fff'} style={styles.resultTotal} />
+            ))}
+          </View>
+          <View style={styles.container}>
+            {drawTwoResult.map((result, index) => (
+              <ScrollView contentContainerStyle={styles.result} key={`drawTwoResult_${index}`}>
+                {result.drawn.map((modifier, i) => (
+                  <ModifierView key={`drawTwoDrawn_${index}_${i}`} modifier={modifier} width={width / 2 - 48} style={styles.modifier} />
+                ))}
+              </ScrollView>
+            ))}
+          </View>
+        </>
       </TouchableWithoutFeedback>
     </Modal>
   );

@@ -15,7 +15,7 @@ class HeroOptions implements Partial<Hero> {
 
 export interface DrawResult {
   drawn: Modifier[];
-  total: string;
+  total: Modifier;
 }
 
 export class Hero {
@@ -78,12 +78,7 @@ export class Hero {
     }
 
     total.effects = uniq(total.effects);
-    return (typeof total?.attack === 'number' ? [`Attack: ${total.attack > 0 ? '+' : ''}${total.attack.toString()}`] : [])
-      .concat(total?.heal ? [`Heal: ${total.heal > 0 ? '+' : ''}${total.heal.toString()}`] : [])
-      .concat(total?.pierce ? [`Pierce: ${total.pierce > 0 ? '+' : ''}${total.pierce.toString()}`] : [])
-      .concat(total?.targets ? [`Targets: ${total.targets > 0 ? '+' : ''}${total.targets.toString()}`] : [])
-      .concat(total?.effects ? total.effects : [])
-      .join(' ');
+    return total;
   }
 
   lastDrawn = (n = 1) => (this._drawn.length >= n ? this._drawn.slice(-n)[0] : null);

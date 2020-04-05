@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, Image } from 'react-native';
 import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
-import { reload, advantageDisadvantage, effectShadow, roundShadow, edit, plus, undo } from 'assets/images';
+import { reload, advantageDisadvantage, roundShadow, edit, plus, undo } from 'assets/images';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
@@ -11,9 +11,12 @@ import Deck from './components/Deck/Deck';
 import { removeHero } from 'src/store/heroes/heroes';
 import { activeOpacity } from 'src/core/contstants';
 import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
+import effectIcons from 'src/core/images/effectIcons';
 import DrawTwo from './components/DrawTwo/DrawTwo';
-import statusIcons from 'src/core/images/statusIcons';
 import HeroAction from './components/HeroAction/HeroAction';
+import valueIcons from 'src/core/images/valueIcons';
+import DrawTotal from './components/DrawTotal/DrawTotal';
+import SquareIcon from 'src/components/SquareIcon/SquareIcon';
 
 interface StateProps {
   hero: HeroVm;
@@ -109,17 +112,15 @@ class HeroView extends Component<Props, State> {
         <View style={styles.container}>
           <View style={styles.modifiers}>
             <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddBless(hero)} style={styles.modifier}>
-              <Image source={statusIcons.Bless} style={styles.modifierAction} />
-              <Image source={effectShadow} style={styles.actionShadow} />
+              <SquareIcon image={effectIcons.Bless} />
               <Text style={styles.modifierActionText}>{hero.blessesTotal}</Text>
             </TouchableOpacity>
             <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddCurse(hero)} style={styles.modifier}>
-              <Image source={statusIcons.Curse} style={styles.modifierAction} />
-              <Image source={effectShadow} style={styles.actionShadow} />
+              <SquareIcon image={effectIcons.Curse} />
               <Text style={styles.modifierActionText}>{hero.cursesTotal}</Text>
             </TouchableOpacity>
             <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddMinusOne(hero)} style={styles.modifier}>
-              <Image source={statusIcons.MinusOne} style={styles.modifierAction} />
+              <Image source={valueIcons['-1']} style={styles.modifierAction} />
               <Image source={roundShadow} style={styles.actionShadow} />
               <Text style={styles.modifierActionText}>{hero.extraMinusOneTotal}</Text>
             </TouchableOpacity>
@@ -138,7 +139,7 @@ class HeroView extends Component<Props, State> {
               </>
             )}
           </View>
-          <Text style={styles.total}>{total}</Text>
+          <DrawTotal total={total} />
           <View style={styles.deckContainer}>
             <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo} style={styles.advantageDisadvantageWrapper}>
               <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
