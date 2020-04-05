@@ -59,7 +59,13 @@ export default ({
                 noShadow
               />
             ) : (
-              <SquareIcon image={effectIcons[x]} style={styles.iconWrapper} imageStyle={styles.icon} noShadow />
+              <SquareIcon
+                image={effectIcons[x]}
+                style={styles.iconWrapper}
+                imageStyle={styles.icon}
+                key={`total_effect_icon_${id.current}_${x}`}
+                noShadow
+              />
             )
           )
         : null}
