@@ -36,11 +36,13 @@ export default ({ hero: heroVm, visible, onClose }: Props) => {
       style={styles.modal}>
       <TouchableWithoutFeedback onPress={() => onClose(hero)}>
         <>
-          <View style={{ flexGrow: 0, flexShrink: 0, flexDirection: 'row', margin: 32, marginBottom: 0 }}>
-            {drawTwoResult.map((result, index) => (
-              <DrawTotal total={result.total} color={'#fff'} style={styles.resultTotal} key={`drawTotal_${index}`} />
-            ))}
-          </View>
+          {drawTwoResult.some(x => x.total.next) ? (
+            <View style={styles.totalWrapper}>
+              {drawTwoResult.map((result, index) => (
+                <DrawTotal total={result.total} color={'#fff'} style={styles.resultTotal} key={`drawTotal_${index}`} />
+              ))}
+            </View>
+          ) : null}
           <View style={styles.container}>
             {drawTwoResult.map((result, index) => (
               <ScrollView contentContainerStyle={styles.result} key={`drawTwoResult_${index}`}>
