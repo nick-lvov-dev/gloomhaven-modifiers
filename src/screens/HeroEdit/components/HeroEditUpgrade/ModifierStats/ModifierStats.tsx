@@ -9,6 +9,7 @@ import valueIcons from 'src/core/images/valueIcons';
 import SquareIcon from 'src/components/SquareIcon/SquareIcon';
 import roundEffects from 'src/core/images/roundEffects';
 import effectIcons from 'src/core/images/effectIcons';
+import 'react-native-get-random-values';
 import { v4 as guid } from 'uuid';
 
 export default ({ total, color = colors.dark, style }: { total: Modifier | undefined; color?: string; style?: StyleProp<ViewStyle> }) => {

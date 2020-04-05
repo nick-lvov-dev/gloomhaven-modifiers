@@ -8,6 +8,7 @@ import { Modifier } from 'src/core/Modifiers/models/Modifier';
 import { colors } from 'src/core/colors';
 import SquareIcon from 'src/components/SquareIcon/SquareIcon';
 import roundEffects from 'src/core/images/roundEffects';
+import 'react-native-get-random-values';
 import { v4 as guid } from 'uuid';
 
 export default ({ total, color = colors.dark, style }: { total: Modifier | undefined; color?: string; style?: StyleProp<ViewStyle> }) => {
