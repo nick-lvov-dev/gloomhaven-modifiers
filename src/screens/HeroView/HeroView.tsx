@@ -159,9 +159,11 @@ class HeroView extends Component<Props, State> {
               <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
             </TouchableOpacity>
             <Deck hero={hero} onDraw={this.onDraw} />
-            <TouchableOpacity activeOpacity={activeOpacity} onPress={this.undo} style={styles.undoWrapper}>
-              <Image source={undo} style={styles.undo} />
-            </TouchableOpacity>
+            {this.state.history.length ? (
+              <TouchableOpacity activeOpacity={activeOpacity} onPress={this.undo} style={styles.undoWrapper}>
+                <Image source={undo} style={styles.undo} />
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       </>
