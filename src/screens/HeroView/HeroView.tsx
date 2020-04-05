@@ -17,6 +17,8 @@ import HeroAction from './components/HeroAction/HeroAction';
 import valueIcons from 'src/core/images/valueIcons';
 import DrawTotal from './components/DrawTotal/DrawTotal';
 import SquareIcon from 'src/components/SquareIcon/SquareIcon';
+import RoundIcon from 'src/components/RoundIcon/RoundIcon';
+import { isEqual } from 'lodash';
 
 interface StateProps {
   hero: HeroVm;
@@ -50,6 +52,12 @@ class HeroView extends Component<Props, State> {
 
   private _save = (hero: HeroVm) => this.setState({ history: [...this.state.history, this.state.heroModel], heroModel: hero });
 
+  componentDidUpdate(prevProps: Props) {
+    if (!isEqual(prevProps.hero, this.props.hero)) {
+      this._save(this.props.hero);
+    }
+  }
+
   get isMonster() {
     return this.state.heroModel.heroClass === HeroClass.Monsters;
   }
@@ -58,15 +66,19 @@ class HeroView extends Component<Props, State> {
     return mapVmToHero(this.state.heroModel);
   }
 
-  getOtherCursesCount = (hero: Hero) => {
-    return this.isMonster ? 0 : this.props.heroCurseCount - hero.cursesTotal;
-  };
+  get otherCursesCount() {
+    return this.isMonster ? 0 : this.props.heroCurseCount - mapVmToHero(this.props.hero).cursesTotal;
+  }
 
-  getOtherBlessesCount = (hero: Hero) => {
-    return this.props.blessCount - hero.blessesTotal;
-  };
+  get otherBlessesCount() {
+    return this.props.blessCount - mapVmToHero(this.props.hero).blessesTotal;
+  }
 
-  onDraw = (hero: Hero) => this._save(new HeroVm(hero));
+  get otherMinusOneCount() {
+    return this.props.blessCount - mapVmToHero(this.props.hero).extraMinusOneTotal;
+  }
+
+  onDraw = (hero: Hero) => !hero.lastDrawn()?.next && this._save(new HeroVm(hero));
 
   onShuffle = (hero: Hero) => {
     hero.shuffle(true);
@@ -74,18 +86,19 @@ class HeroView extends Component<Props, State> {
   };
 
   onAddBless = (hero: Hero) => {
-    if (this.getOtherBlessesCount(hero) + hero.blessesTotal === 10) return;
+    if (this.otherBlessesCount + hero.blessesTotal === 10) return;
     hero.addBless();
     this._save(new HeroVm(hero));
   };
 
   onAddCurse = (hero: Hero) => {
-    if (this.getOtherCursesCount(hero) + hero.cursesTotal === 10) return;
+    if (this.otherCursesCount + hero.cursesTotal === 10) return;
     hero.addCurse();
     this._save(new HeroVm(hero));
   };
 
   onAddMinusOne = (hero: Hero) => {
+    if (this.otherMinusOneCount + hero.extraMinusOneTotal === 10) return;
     hero.addMinusOne();
     this._save(new HeroVm(hero));
   };
@@ -119,11 +132,12 @@ class HeroView extends Component<Props, State> {
               <SquareIcon image={effectIcons.Curse} />
               <Text style={styles.modifierActionText}>{hero.cursesTotal}</Text>
             </TouchableOpacity>
-            <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddMinusOne(hero)} style={styles.modifier}>
-              <Image source={valueIcons['-1']} style={styles.modifierAction} />
-              <Image source={roundShadow} style={styles.actionShadow} />
-              <Text style={styles.modifierActionText}>{hero.extraMinusOneTotal}</Text>
-            </TouchableOpacity>
+            {!this.isMonster ? (
+              <TouchableOpacity activeOpacity={activeOpacity} onPress={() => this.onAddMinusOne(hero)} style={styles.modifier}>
+                <RoundIcon image={valueIcons['-1']} />
+                <Text style={styles.modifierActionText}>{hero.extraMinusOneTotal}</Text>
+              </TouchableOpacity>
+            ) : null}
             <HeroAction image={reload} onPress={() => this.onShuffle(hero)} style={styles.shuffleWrapper} imageStyle={styles.shuffle} />
           </View>
           <View style={styles.actions}>
@@ -139,7 +153,7 @@ class HeroView extends Component<Props, State> {
               </>
             )}
           </View>
-          <DrawTotal total={total} />
+          {total?.next ? <DrawTotal total={total} /> : null}
           <View style={styles.deckContainer}>
             <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo} style={styles.advantageDisadvantageWrapper}>
               <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />

@@ -103,12 +103,12 @@ const HeroEdit = ({ isLoading, add, update, heroes, heroClass: hero, onSubmit, o
                     <HeroEditUpgrade
                       key={key}
                       upgrade={ClassUpgrades[heroClass.name][key]}
-                      checkedCount={upgrades.filter(x => x.name === ClassUpgrades[heroClass.name][key].name).length}
+                      checkedCount={upgrades.filter(x => x.id === ClassUpgrades[heroClass.name][key].id).length}
                       onChange={checked => {
                         if (checked) {
                           setUpgrades(upgrades.concat([ClassUpgrades[heroClass.name][key]]));
                         } else {
-                          const index = upgrades.findIndex(x => x.name === ClassUpgrades[heroClass.name][key].name);
+                          const index = upgrades.findIndex(x => x.id === ClassUpgrades[heroClass.name][key].id);
                           setUpgrades(upgrades.slice(0, index).concat(upgrades.slice(index + 1)));
                         }
                       }}

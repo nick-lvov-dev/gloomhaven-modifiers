@@ -15,6 +15,7 @@ export interface HeroesState {
   heroesLoaded: boolean;
   blessCount: number;
   heroCurseCount: number;
+  minusOneCount: number;
 }
 
 const initialState: HeroesState = {
@@ -23,6 +24,7 @@ const initialState: HeroesState = {
   heroesLoaded: false,
   blessCount: 0,
   heroCurseCount: 0,
+  minusOneCount: 0,
 };
 
 const getHeroCurseCount = (heroes: HeroVm[]) =>
@@ -30,6 +32,9 @@ const getHeroCurseCount = (heroes: HeroVm[]) =>
 
 const getBlessCount = (heroes: HeroVm[]) =>
   heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.Bless.id).length, 0);
+
+const getMinusOneCount = (heroes: HeroVm[]) =>
+  heroes.reduce((total, hero) => total + hero.currentModifiers.filter(x => x === StandardModifiers.ExtraNOne.id).length, 0);
 
 const slice = createSlice({
   name: 'heroes',
@@ -43,6 +48,7 @@ const slice = createSlice({
         heroesLoaded: true,
         blessCount: getBlessCount(heroes),
         heroCurseCount: getHeroCurseCount(heroes),
+        minusOneCount: getMinusOneCount(heroes),
       };
     },
     setLoading: (state, action: PayloadAction<boolean>) => ({ ...state, isLoading: action.payload }),

@@ -9,6 +9,7 @@ export default ({
   style,
   image,
   withBackground,
+  noShadow,
 }: {
   tintColor?: string;
   style?: StyleProp<ViewStyle>;
@@ -16,11 +17,12 @@ export default ({
   imageStyle?: StyleProp<ImageStyle>;
   shadowStyle?: StyleProp<ImageStyle>;
   withBackground?: boolean;
+  noShadow?: boolean;
 }) => (
   <View>
     <View style={[withBackground ? styles.container : null, style]}>
       <Image source={image} style={[styles.icon, withBackground ? styles.iconWithBackground : null, imageStyle]} />
     </View>
-    <Image source={roundShadow} style={[styles.shadow, shadowStyle]} />
+    {!noShadow ? <Image source={roundShadow} style={[styles.shadow, shadowStyle]} /> : null}
   </View>
 );

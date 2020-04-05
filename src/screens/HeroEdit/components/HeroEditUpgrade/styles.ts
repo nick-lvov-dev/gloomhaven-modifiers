@@ -6,4 +6,5 @@ export default StyleSheet.create({
   checkboxesWrapper: { flexDirection: 'row' },
   checkbox: { marginRight: 8 },
   text: { fontFamily: FontFamily.Regular, fontSize: 16 },
+  contentWrapper: { flexDirection: 'row', alignItems: 'center' },
 });

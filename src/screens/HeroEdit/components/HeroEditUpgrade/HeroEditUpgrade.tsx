@@ -6,6 +6,8 @@ import styles from './styles';
 import 'react-native-get-random-values';
 import { v4 as guid } from 'uuid';
 import { ClassUpgrade } from 'src/core/ClassUpdgrades/models/ClassUpgrade';
+import ModifierStats from './components/ModifierStats/ModifierStats';
+import { numberToWord } from 'src/common/helpers/numberToWord.helper';
 
 interface Props {
   upgrade: ClassUpgrade;
@@ -28,7 +30,28 @@ export default ({ upgrade, checkedCount, onChange }: Props) => {
           />
         ))}
       </View>
-      <Text style={styles.text}>{upgrade.name}</Text>
+      <View style={styles.contentWrapper}>
+        {upgrade.subModifier ? (
+          upgrade.modifier ? (
+            <>
+              <Text style={styles.text}>Replace {numberToWord(upgrade.count)}</Text>
+              <ModifierStats modifier={upgrade.subModifier} />
+              <Text style={styles.text}>with</Text>
+              <ModifierStats modifier={upgrade.modifier} />
+            </>
+          ) : (
+            <>
+              <Text style={styles.text}>Remove {numberToWord(upgrade.count)}</Text>
+              <ModifierStats modifier={upgrade.subModifier} />
+            </>
+          )
+        ) : upgrade.modifier ? (
+          <>
+            <Text style={styles.text}>Add {numberToWord(upgrade.count)}</Text>
+            <ModifierStats modifier={upgrade.modifier} />
+          </>
+        ) : null}
+      </View>
     </View>
   );
 };

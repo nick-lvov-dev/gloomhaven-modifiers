@@ -67,13 +67,14 @@ export class Hero {
     total.effects = total.effects ?? [];
     total.pierce = total.pierce ?? 0;
     let i = 2;
-    while (i <= this._drawn.length && this._drawn.slice(-i)[0].next) {
+    while (i <= this._drawn.length &&  this._drawn.slice(-i)[0].next) {
       const mod = this._drawn.slice(-i)[0];
       total.attack += mod.attack ?? 0;
       total.heal += mod.heal ?? 0;
       total.pierce += mod.pierce ?? 0;
       total.targets += mod.targets ?? 0;
       total.effects = total.effects.concat(mod.effects ?? []);
+      total.next = true;
       i++;
     }
 
@@ -170,7 +171,7 @@ export class Hero {
   };
 
   private _addUpgrade = (upgrade: ClassUpgrade) => {
-    if (this._upgrades.filter(x => x.name === upgrade.name).length >= upgrade.limit) return;
+    if (this._upgrades.filter(x => x.id === upgrade.id).length >= upgrade.limit) return;
 
     if (upgrade.modifier)
       for (let i = 0; i < upgrade.count; i++) {
@@ -182,7 +183,7 @@ export class Hero {
   };
 
   private _removeUpgrade = (upgrade: ClassUpgrade) => {
-    const index = this._upgrades.findIndex(x => x.name === upgrade.name);
+    const index = this._upgrades.findIndex(x => x.id === upgrade.id);
     if (index === -1) return;
 
     if (upgrade.subModifier)
