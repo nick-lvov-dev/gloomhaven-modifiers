@@ -23,7 +23,7 @@ const ScoundrelUpdgrades: {
   AddTwoPierceNext: Object.freeze(new ClassUpgrade(ScoundrelModifiers.PierceNext, 2, 'Add two Pierce next')),
   AddTwoPoisonNext: Object.freeze(new ClassUpgrade(ScoundrelModifiers.PoisonNext, 2, 'Add two Poison next', { limit: 2 })),
   AddTwoMuddleNext: Object.freeze(new ClassUpgrade(ScoundrelModifiers.MuddleNext, 2, 'Add two Muddle next')),
-  AddOneInvisibleNext: Object.freeze(new ClassUpgrade(ScoundrelModifiers.InvisibilityNext, 2, 'Add one Invisibility next')),
+  AddOneInvisibleNext: Object.freeze(new ClassUpgrade(ScoundrelModifiers.InvisibilityNext, 1, 'Add one Invisibility next')),
 };
 
 export default Object.freeze(ScoundrelUpdgrades);
