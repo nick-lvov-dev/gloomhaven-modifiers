@@ -19,15 +19,19 @@ import DrawTotal from './components/DrawTotal/DrawTotal';
 import SquareIcon from 'src/components/SquareIcon/SquareIcon';
 import RoundIcon from 'src/components/RoundIcon/RoundIcon';
 import { isEqual } from 'lodash';
+import HistorySwipeHint from './components/HistorySwipeHint/HistorySwipeHint';
+import { showHistoryHint } from 'src/store/profile';
 
 interface StateProps {
   hero: HeroVm;
   blessCount: number;
   heroCurseCount: number;
+  historyHintShown: boolean;
 }
 
 interface DispatchProps {
   delete: (heroClass: HeroClass) => void;
+  showHistorySwipeHint: () => void;
 }
 
 interface OwnProps {
@@ -116,6 +120,7 @@ class HeroView extends Component<Props, State> {
   };
 
   render() {
+    const { onEdit, historyHintShown, showHistorySwipeHint } = this.props;
     const hero = this.hero;
     const total = hero.drawnTotal;
 
@@ -143,7 +148,7 @@ class HeroView extends Component<Props, State> {
           <View style={styles.actions}>
             {!this.isMonster && (
               <>
-                {this.props.onEdit && <HeroAction image={edit} onPress={this.props.onEdit} style={styles.action} />}
+                {onEdit && <HeroAction image={edit} onPress={onEdit} style={styles.action} />}
                 <HeroAction
                   image={plus}
                   onPress={this.delete}
@@ -153,12 +158,13 @@ class HeroView extends Component<Props, State> {
               </>
             )}
           </View>
+          {!historyHintShown && hero.drawn.length > 2 ? <HistorySwipeHint /> : null}
           {total?.next ? <DrawTotal total={total} /> : null}
           <View style={styles.deckContainer}>
             <TouchableOpacity activeOpacity={activeOpacity} onPress={this.onDrawTwo} style={styles.advantageDisadvantageWrapper}>
               <Image source={advantageDisadvantage} style={styles.advantageDisadvantage} />
             </TouchableOpacity>
-            <Deck hero={hero} onDraw={this.onDraw} />
+            <Deck hero={hero} onDraw={this.onDraw} onDrag={showHistorySwipeHint} />
             {this.state.history.length ? (
               <TouchableOpacity activeOpacity={activeOpacity} onPress={this.undo} style={styles.undoWrapper}>
                 <Image source={undo} style={styles.undo} />
@@ -174,9 +180,14 @@ class HeroView extends Component<Props, State> {
 export default connect<StateProps, DispatchProps, OwnProps, RootState>(
   (state, ownProps) => {
     const { heroes, blessCount, heroCurseCount } = state.heroes;
-    return { hero: heroes.find(x => x.heroClass === ownProps.heroClass)!, blessCount, heroCurseCount };
+    return {
+      hero: heroes.find(x => x.heroClass === ownProps.heroClass)!,
+      blessCount,
+      heroCurseCount,
+      historyHintShown: state.profile.isHistoryHintShown,
+    };
   },
-  { delete: removeHero },
+  { delete: removeHero, showHistorySwipeHint: showHistoryHint },
   null,
   { forwardRef: true }
 )(HeroView);

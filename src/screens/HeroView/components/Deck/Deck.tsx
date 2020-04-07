@@ -10,7 +10,8 @@ import { Modifier } from 'src/core/Modifiers/models/Modifier';
 
 interface Props {
   hero: Hero;
-  onDraw: (hero: Hero) => void;
+  onDraw?: (hero: Hero) => void;
+  onDrag?: () => void;
 }
 
 interface AnimatedValueSub<T> {
@@ -46,7 +47,7 @@ const getShadowInterpolation = (drawn: Modifier[]) =>
 
 const getMaxCardTopValue = (drawn: Modifier[]) => (drawn.length - 1) * movingModifierHeight;
 
-export default ({ hero, onDraw }: Props) => {
+export default ({ hero, onDraw, onDrag }: Props) => {
   const [animatedCardTop] = useState(new Animated.Value(0));
   const animatedCardTopValue = useRef<AnimatedValueSub<number>>({ sub: '', value: 0 });
   const dragDistance = useRef(0);
@@ -68,7 +69,7 @@ export default ({ hero, onDraw }: Props) => {
     if (isDrawing || isMoving) return;
 
     hero.draw();
-    onDraw(hero);
+    onDraw && onDraw(hero);
     animatedCardTop.setValue(drawnCardTopOffset);
     animatedCardOpacity.setValue(0);
     setIsDrawing(true);
@@ -129,6 +130,7 @@ export default ({ hero, onDraw }: Props) => {
         if (!isDragging) {
           if (Math.round(initialOffset) - Math.round(pageY) >= effectiveDragLength) {
             setIsDragging(true);
+            onDrag && onDrag();
           } else return;
         }
 
