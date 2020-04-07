@@ -7,12 +7,12 @@ import { loadHeroes, addHero, removeHero, updateHero } from 'src/store/heroes/he
 import { RootState } from 'src/store/store';
 import { HeroClass, classes } from 'src/core/HeroClass';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
-import { Monsters } from 'src/common/Monsters';
 import { TabView, TabBar } from 'react-native-tab-view';
 import HeroView from '../HeroView/HeroView';
 import styles from './styles';
 import HeroEdit from '../HeroEdit/components/HeroEdit/HeroEdit';
 import { plus } from 'assets/images';
+import { loadHistoryHintData } from 'src/store/profile';
 
 interface StateProps {
   heroes: HeroVm[];
@@ -22,6 +22,7 @@ interface StateProps {
 
 interface DispatchProps {
   loadHeroesData: () => void;
+  loadHintData: () => void;
   remove: (heroClass: HeroClass) => void;
   add: (hero: HeroVm) => void;
   update: (hero: HeroVm) => void;
@@ -38,7 +39,7 @@ interface TabRoute {
   title: string;
 }
 
-const Home = ({ heroes, navigation, loadHeroesData, add, update, heroesLoaded }: Props) => {
+const Home = ({ heroes, navigation, loadHeroesData, loadHintData, update, heroesLoaded }: Props) => {
   const [] = useState(false);
   const [index, setIndex] = useState(0);
   const routes: TabRoute[] = useMemo(
@@ -60,7 +61,8 @@ const Home = ({ heroes, navigation, loadHeroesData, add, update, heroesLoaded }:
   );
   useEffect(() => {
     loadHeroesData();
-  }, [loadHeroesData]);
+    loadHintData();
+  }, [loadHeroesData, loadHintData]);
   useEffect(() => {
     const sub = navigation.addListener('blur', () => {
       if (index < routes.length) update(refs[routes[index].key].current?.state?.heroModel);
@@ -112,6 +114,7 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
   },
   {
     loadHeroesData: loadHeroes,
+    loadHintData: loadHistoryHintData,
     add: addHero,
     remove: removeHero,
     update: updateHero,
