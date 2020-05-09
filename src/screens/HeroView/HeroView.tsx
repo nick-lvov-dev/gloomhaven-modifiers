@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, Image } from 'react-native';
+import { Text, View, TouchableOpacity, Image, AppStateStatus, AppState } from 'react-native';
 import styles from './styles';
 import { connect } from 'react-redux';
 import { RootState } from 'src/store/store';
@@ -8,7 +8,7 @@ import { HeroVm } from 'src/store/heroes/models/HeroVm';
 import { Hero } from 'src/core/Hero/Hero';
 import { HeroClass } from 'src/core/HeroClass';
 import Deck from './components/Deck/Deck';
-import { removeHero } from 'src/store/heroes/heroes';
+import { removeHero, updateHero, saveData } from 'src/store/heroes/heroes';
 import { activeOpacity } from 'src/core/contstants';
 import { mapVmToHero } from 'src/store/heroes/models/helpers/mapVmToHero.helper';
 import effectIcons from 'src/core/images/effectIcons';
@@ -31,11 +31,14 @@ interface StateProps {
 
 interface DispatchProps {
   delete: (heroClass: HeroClass) => void;
+  update: (hero: HeroVm) => void;
+  save: (arg: void) => void;
   showHistorySwipeHint: () => void;
 }
 
 interface OwnProps {
   heroClass: HeroClass;
+  isScreenActive: boolean;
   onEdit?: () => void;
 }
 
@@ -53,6 +56,12 @@ class HeroView extends Component<Props, State> {
     heroModel: this.props.hero,
     isDrawTwo: false,
   };
+
+  constructor(props: Props) {
+    super(props);
+
+    AppState.addEventListener('change', this.handelAppStateChange);
+  }
 
   private _save = (hero: HeroVm) => this.setState({ history: [...this.state.history, this.state.heroModel], heroModel: hero });
 
@@ -81,6 +90,13 @@ class HeroView extends Component<Props, State> {
   get otherMinusOneCount() {
     return this.props.blessCount - mapVmToHero(this.props.hero).extraMinusOneTotal;
   }
+
+  handelAppStateChange = (nextAppState: AppStateStatus) => {
+    if (nextAppState !== 'active' && this.props.isScreenActive) {
+      this.props.update(this.state.heroModel);
+      this.props.save();
+    }
+  };
 
   onDraw = (hero: Hero) => !hero.lastDrawn()?.next && this._save(new HeroVm(hero));
 
@@ -187,7 +203,7 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
       historyHintShown: state.profile.isHistoryHintShown,
     };
   },
-  { delete: removeHero, showHistorySwipeHint: showHistoryHint },
+  { delete: removeHero, showHistorySwipeHint: showHistoryHint, update: updateHero, save: saveData },
   null,
   { forwardRef: true }
 )(HeroView);

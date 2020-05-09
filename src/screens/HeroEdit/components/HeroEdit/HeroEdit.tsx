@@ -48,7 +48,7 @@ const HeroEdit = ({ isLoading, add, update, heroes, heroClass: hero, onSubmit, o
   const isEdit = !!heroVm;
   const [heroClass, setHeroClass] = useState(classes.find(x => x.name === heroVm?.heroClass) ?? availableClasses[0]);
   const [upgrades, setUpgrades] = useState<ClassUpgrade[]>(heroVm?.upgrades ?? []);
-  const [activeSections, setActiveSections] = useState<number[]>([]);
+  const [activeSections, setActiveSections] = useState(isEdit ? [0] : []);
   const [isClassSelectOpen, setIsClassSelectOpen] = useState(false);
   useEffect(() => {
     if (!isEdit || heroVm!.heroClass !== heroClass.name) setUpgrades([]);

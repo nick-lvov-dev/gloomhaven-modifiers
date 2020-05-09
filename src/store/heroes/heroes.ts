@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction, Dispatch } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import { createSlice, PayloadAction, Dispatch, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState, Thunk } from '../store';
 import AsyncStorage from '@react-native-community/async-storage';
 import { HeroVm } from './models/HeroVm';
 import { cloneDeep } from 'lodash';
@@ -60,6 +60,11 @@ export default slice.reducer;
 
 const { load, setLoading } = HeroesActions;
 
+export const saveData = createAsyncThunk<void, void, Thunk<void>>('saveData', async (arg, { getState }) => {
+  const heroes = getState().heroes.heroes;
+  await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
+});
+
 export const loadHeroes = () => async (dispatch: Dispatch, getState: () => RootState) => {
   // await AsyncStorage.removeItem(HEROES_STORAGE_KEY);
   dispatch(setLoading(true));
@@ -85,7 +90,7 @@ export const addHero = (hero: HeroVm) => async (dispatch: Dispatch, getState: ()
     return;
   }
   try {
-    await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([hero])));
+    // await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes.concat([hero])));
     dispatch(load(heroes.concat([cloneDeep(hero)])));
     dispatch(setLoading(false));
   } catch (e) {
@@ -97,7 +102,7 @@ export const updateHero = (hero: HeroVm) => async (dispatch: Dispatch, getState:
   dispatch(setLoading(true));
   const heroes = getState().heroes.heroes.map(x => (x.heroClass === hero.heroClass ? cloneDeep(hero) : x));
   try {
-    await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
+    // await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
     dispatch(load(heroes));
     dispatch(setLoading(false));
   } catch (e) {
@@ -109,7 +114,7 @@ export const removeHero = (heroClass: HeroClass) => async (dispatch: Dispatch, g
   dispatch(setLoading(true));
   const heroes = getState().heroes.heroes.filter(x => x.heroClass !== heroClass);
   try {
-    await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
+    // await AsyncStorage.setItem(HEROES_STORAGE_KEY, JSON.stringify(heroes));
     dispatch(load(heroes));
     dispatch(setLoading(false));
   } catch (e) {
