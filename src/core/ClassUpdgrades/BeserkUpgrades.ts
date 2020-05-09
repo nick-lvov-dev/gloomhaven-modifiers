@@ -11,7 +11,7 @@ const BerserkUpdgrades: {
   AddOneStunNext: ClassUpgrade;
   AddOneOneDisarmNext: ClassUpgrade;
   AddTwoHealOneNext: ClassUpgrade;
-  AddTwoTwoFire: ClassUpgrade;
+  AddOneTwoFire: ClassUpgrade;
 } = {
   RemoveTwoMinusOne: Object.freeze(new ClassUpgrade(null, 2, 'Remove two -1', { subModifier: StandardModifiers.MinusOne })),
   RemoveFourZero: Object.freeze(new ClassUpgrade(null, 4, 'Remove four 0', { subModifier: StandardModifiers.Zero })),
@@ -31,7 +31,7 @@ const BerserkUpdgrades: {
   AddOneStunNext: Object.freeze(new ClassUpgrade(BerserkModifiers.StunNext, 1, 'Add one Stun next', { limit: 2 })),
   AddOneOneDisarmNext: Object.freeze(new ClassUpgrade(BerserkModifiers.OneDisarmNext, 1, 'Add one +1 Disarm next')),
   AddTwoHealOneNext: Object.freeze(new ClassUpgrade(BerserkModifiers.HealOneNext, 2, 'Add two Heal 1 Next')),
-  AddTwoTwoFire: Object.freeze(new ClassUpgrade(BerserkModifiers.TwoFire, 2, 'Add two +2 Fire', { limit: 2 })),
+  AddOneTwoFire: Object.freeze(new ClassUpgrade(BerserkModifiers.TwoFire, 1, 'Add one +2 Fire', { limit: 2 })),
 };
 
 export default Object.freeze(BerserkUpdgrades);
