@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, AppStateStatus, AppState } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamsList } from 'src/AppNavigator/models/RootStackParamsList';
 import { connect } from 'react-redux';
-import { loadHeroes, addHero, removeHero, updateHero } from 'src/store/heroes/heroes';
+import { loadHeroes, addHero, removeHero, updateHero, saveData } from 'src/store/heroes/heroes';
 import { RootState } from 'src/store/store';
 import { HeroClass, classes } from 'src/core/HeroClass';
 import { HeroVm } from 'src/store/heroes/models/HeroVm';
@@ -26,6 +26,7 @@ interface DispatchProps {
   remove: (heroClass: HeroClass) => void;
   add: (hero: HeroVm) => void;
   update: (hero: HeroVm) => void;
+  save: (arg: void) => void;
 }
 
 interface OwnProps {
@@ -39,7 +40,7 @@ interface TabRoute {
   title: string;
 }
 
-const Home = ({ heroes, navigation, loadHeroesData, loadHintData, update, heroesLoaded }: Props) => {
+const Home = ({ heroes, navigation, loadHeroesData, loadHintData, update, save, heroesLoaded }: Props) => {
   const [] = useState(false);
   const [index, setIndex] = useState(0);
   const routes: TabRoute[] = useMemo(
@@ -53,12 +54,32 @@ const Home = ({ heroes, navigation, loadHeroesData, loadHintData, update, heroes
   const renderScene = useCallback(
     ({ route: { key } }: { route: TabRoute }) =>
       key in HeroClass ? (
-        <HeroView heroClass={key as HeroClass} onEdit={() => navigation.navigate('HeroEdit', { hero: key as HeroClass })} ref={refs[key]} />
+        <HeroView
+          heroClass={key as HeroClass}
+          onEdit={() => navigation.navigate('HeroEdit', { hero: key as HeroClass })}
+          isScreenActive={routes.findIndex(x => x.key === key) === index}
+          ref={refs[key]}
+        />
       ) : (
         <HeroEdit key={`AddHero_${index === heroes.length ? 'active' : 'inactive'}`} />
       ),
     [heroes]
   );
+
+  const handleAppStateChange = useCallback(
+    (nextAppState: AppStateStatus) => {
+      if (nextAppState !== 'active' && index === routes.length - 1) {
+        save();
+      }
+    },
+    [index, routes]
+  );
+
+  useEffect(() => {
+    AppState.addEventListener('change', handleAppStateChange);
+    return () => AppState.removeEventListener('change', handleAppStateChange);
+  }, [handleAppStateChange]);
+
   useEffect(() => {
     loadHeroesData();
     loadHintData();
@@ -118,5 +139,6 @@ export default connect<StateProps, DispatchProps, OwnProps, RootState>(
     add: addHero,
     remove: removeHero,
     update: updateHero,
+    save: saveData,
   }
 )(Home);
