@@ -58,7 +58,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "jest": "25.x",
     "metro-react-native-babel-preset": "^0.56.0",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "prettier": "^1.19.1",
     "react-native-bundle-visualizer": "^2.1.1",
     "react-native-typescript-transformer": "^1.2.13",
